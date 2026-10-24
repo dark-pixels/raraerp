@@ -297,6 +297,21 @@ pub async fn list_units(
     Ok(Json(serde_json::json!({ "data": data })))
 }
 
+pub async fn create_unit(
+    State(state): State<AppState>,
+    Extension(user): Extension<AuthenticatedUser>,
+    Json(body): Json<serde_json::Value>,
+) -> AppResult<Json<serde_json::Value>> {
+    require_permission(&user, "inventory.create")?;
+    let name = body.get("name").and_then(|v| v.as_str()).ok_or_else(|| AppError::Validation("name required".into()))?;
+    let abbreviation = body.get("abbreviation").and_then(|v| v.as_str()).ok_or_else(|| AppError::Validation("abbreviation required".into()))?;
+    let id = sqlx::query_scalar!(
+        "INSERT INTO units_of_measure (name, abbreviation) VALUES ($1, $2) RETURNING id",
+        name, abbreviation
+    ).fetch_one(&state.pool).await?;
+    Ok(Json(serde_json::json!({"id": id})))
+}
+
 pub async fn list_imports(
     State(state): State<AppState>,
     Extension(user): Extension<AuthenticatedUser>,

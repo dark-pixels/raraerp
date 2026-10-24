@@ -91,7 +91,8 @@ pub async fn create_router(pool: DbPool, config: AppConfig) -> Router {
             get(inventory_handlers::list_categories).post(inventory_handlers::create_category))
         .route("/api/v1/inventory/brands",
             get(inventory_handlers::list_brands).post(inventory_handlers::create_brand))
-        .route("/api/v1/inventory/units", get(inventory_handlers::list_units))
+        .route("/api/v1/inventory/units",
+            get(inventory_handlers::list_units).post(inventory_handlers::create_unit))
 
         // Inventory - Imports
         .route("/api/v1/inventory/imports",

@@ -6,7 +6,10 @@ import type {
 	AuthUser
 } from '$types';
 
-const API_BASE = import.meta.env.PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+const API_BASE =
+	typeof window === 'undefined'
+		? (process.env.BACKEND_URL ?? process.env.PUBLIC_API_BASE_URL ?? 'http://localhost:8080')
+		: (import.meta.env.PUBLIC_API_BASE_URL ?? '');
 
 class ApiClient {
 	private accessToken: string | null = null;
@@ -199,7 +202,8 @@ export const inventoryApi = {
 		create: (data: unknown) => api.post('/api/v1/inventory/brands', data)
 	},
 	units: {
-		list: () => api.get('/api/v1/inventory/units')
+		list: () => api.get('/api/v1/inventory/units'),
+		create: (data: unknown) => api.post('/api/v1/inventory/units', data)
 	},
 	imports: {
 		list: (p?: Record<string, unknown>) => api.get('/api/v1/inventory/imports', p as never),

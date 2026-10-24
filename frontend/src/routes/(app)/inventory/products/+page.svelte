@@ -103,11 +103,10 @@
 		if (!newUnitName.trim() || !newUnitAbbr.trim()) { toasts.error('Name and abbreviation required'); return; }
 		savingUnit = true;
 		try {
-			const res = await (await fetch('http://localhost:8080/api/v1/inventory/units', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionStorage.getItem('access_token')}` },
-				body: JSON.stringify({ name: newUnitName.trim(), abbreviation: newUnitAbbr.trim() })
-			})).json() as { id: string };
+			const res = await inventoryApi.units.create({
+				name: newUnitName.trim(),
+				abbreviation: newUnitAbbr.trim()
+			}) as { id: string };
 			toasts.success(`Unit "${newUnitName}" created`);
 			newUnitName = ''; newUnitAbbr = '';
 			showUnitModal = false;
