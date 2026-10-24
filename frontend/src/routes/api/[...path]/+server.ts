@@ -6,7 +6,8 @@ function getBackendUrl(): string {
 
 const proxyHandler: RequestHandler = async ({ request, params, url }) => {
 	const backendUrl = getBackendUrl().replace(/\/$/, '');
-	const targetUrl = `${backendUrl}/api/${params.path}${url.search}`;
+	const cleanSubPath = params.path.startsWith('api/') ? params.path.slice(4) : params.path;
+	const targetUrl = `${backendUrl}/api/${cleanSubPath}${url.search}`;
 
 	const headers = new Headers(request.headers);
 	headers.delete('host');

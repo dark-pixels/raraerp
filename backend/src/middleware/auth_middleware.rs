@@ -12,6 +12,22 @@ pub async fn require_auth(
     mut request: Request,
     next: Next,
 ) -> Result<Response, AppError> {
+    // Never require auth for CORS preflight OPTIONS requests
+    if request.method() == axum::http::Method::OPTIONS {
+        return Ok(next.run(request).await);
+    }
+
+    // Never require auth for public endpoints
+    let path = request.uri().path();
+    if path == "/"
+        || path.ends_with("/health")
+        || path.ends_with("/auth/login")
+        || path.ends_with("/auth/refresh")
+        || path.contains("/webhooks/")
+    {
+        return Ok(next.run(request).await);
+    }
+
     let auth_header = request
         .headers()
         .get(AUTHORIZATION)
