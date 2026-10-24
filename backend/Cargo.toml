@@ -1,0 +1,92 @@
+[package]
+name = "rara-erp-backend"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.75"
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+[[bin]]
+name = "worker"
+path = "src/worker_main.rs"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["multipart", "macros"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["cors", "trace", "limit", "set-header", "compression-gzip"] }
+tokio = { version = "1", features = ["full"] }
+hyper = { version = "1", features = ["full"] }
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "rust_decimal", "json"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Validation
+validator = { version = "0.18", features = ["derive"] }
+
+# Auth & security
+argon2 = "0.5"
+jsonwebtoken = "9"
+rand = "0.8"
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+
+# Types
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+rust_decimal = { version = "1", features = ["serde-with-str"] }
+rust_decimal_macros = "1"
+
+# Logging & tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Error handling
+thiserror = "1"
+anyhow = "1"
+
+# Config
+dotenvy = "0.15"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "multipart"], default-features = false }
+
+# File handling
+mime = "0.3"
+bytes = "1"
+
+# PDF generation
+printpdf = "0.7"
+
+# Background jobs
+tokio-cron-scheduler = "0.13"
+
+# Spreadsheet parsing
+calamine = "0.24"
+
+# QR code generation
+qrcode = "0.14"
+image = { version = "0.25", features = ["png"] }
+
+# Base64
+base64 = "0.22"
+
+# URL encoding
+urlencoding = "2"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
