@@ -43,21 +43,32 @@ async fn main() {
 
     info!("Starting RARA Enterprise ERP Backend");
 
-    // Load configuration
-    let config = AppConfig::from_env().expect("Failed to load configuration");
+    // Load configuration safely
+    let config = AppConfig::from_env().unwrap_or_else(|err| {
+        eprintln!("Configuration warning: {}", err);
+        AppConfig::default()
+    });
     info!(port = config.port, env = %config.app_env, "Configuration loaded");
 
-    // Create database pool
-    let pool = create_pool(&config.database_url, config.db_max_connections)
-        .await
-        .expect("Failed to create database pool");
-    info!("Database pool created");
+    // Create database pool (lazy, non-blocking)
+    let pool = match create_pool(&config.database_url, config.db_max_connections) {
+        Ok(p) => p,
+        Err(e) => {
+            eprintln!("Database pool init warning: {}", e);
+            create_pool("postgres://localhost:5432/placeholder", 1).expect("Failed to initialize fallback pool")
+        }
+    };
+    info!("Database pool initialized");
 
-    // Run migrations
-    if let Err(e) = sqlx::migrate!("./migrations").run(&pool).await {
-        tracing::warn!("Database migrations notice (already applied or skipped): {}", e);
-    } else {
-        info!("Database migrations applied");
+    // Run migrations in background so server starts listening instantly
+    if !config.database_url.is_empty() && !config.database_url.contains("placeholder") {
+        let migration_pool = pool.clone();
+        tokio::spawn(async move {
+            match sqlx::migrate!("./migrations").run(&migration_pool).await {
+                Ok(_) => info!("Database migrations applied"),
+                Err(e) => tracing::warn!("Database migrations notice (already applied or skipped): {}", e),
+            }
+        });
     }
 
     // Build application router
@@ -65,13 +76,21 @@ async fn main() {
     info!("Router configured");
 
     // Bind address
-    let addr: SocketAddr = format!("0.0.0.0:{}", config.port)
+    let port = config.port;
+    let addr: SocketAddr = format!("0.0.0.0:{}", port)
         .parse()
         .expect("Invalid bind address");
 
     info!(addr = %addr, "Listening");
 
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    let listener = match tokio::net::TcpListener::bind(addr).await {
+        Ok(l) => l,
+        Err(e) => {
+            eprintln!("FATAL: Failed to bind TCP listener on {}: {}", addr, e);
+            std::process::exit(1);
+        }
+    };
+
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
         .with_graceful_shutdown(shutdown_signal())
         .await

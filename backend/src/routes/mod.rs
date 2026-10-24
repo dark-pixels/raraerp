@@ -42,20 +42,34 @@ pub async fn create_router(pool: DbPool, config: AppConfig) -> Router {
     let state = AppState { pool: pool.clone(), config: config.clone() };
 
     // CORS configuration
-    let cors = CorsLayer::new()
-        .allow_origin(
-            config.frontend_origin.parse::<HeaderValue>().unwrap_or(HeaderValue::from_static("*"))
-        )
-        .allow_methods([
-            Method::GET, Method::POST, Method::PATCH,
-            Method::PUT, Method::DELETE, Method::OPTIONS,
-        ])
-        .allow_headers([
-            header::CONTENT_TYPE,
-            header::AUTHORIZATION,
-            header::ACCEPT,
-        ])
-        .allow_credentials(true);
+    let cors = if config.frontend_origin == "*" || config.frontend_origin.is_empty() {
+        CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods([
+                Method::GET, Method::POST, Method::PATCH,
+                Method::PUT, Method::DELETE, Method::OPTIONS,
+            ])
+            .allow_headers([
+                header::CONTENT_TYPE,
+                header::AUTHORIZATION,
+                header::ACCEPT,
+            ])
+    } else {
+        CorsLayer::new()
+            .allow_origin(
+                config.frontend_origin.parse::<HeaderValue>().unwrap_or(HeaderValue::from_static("*"))
+            )
+            .allow_methods([
+                Method::GET, Method::POST, Method::PATCH,
+                Method::PUT, Method::DELETE, Method::OPTIONS,
+            ])
+            .allow_headers([
+                header::CONTENT_TYPE,
+                header::AUTHORIZATION,
+                header::ACCEPT,
+            ])
+            .allow_credentials(true)
+    };
 
     // Public routes (no auth required)
     let public_routes = Router::new()
