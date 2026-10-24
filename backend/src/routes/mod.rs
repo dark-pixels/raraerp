@@ -73,6 +73,13 @@ pub async fn create_router(pool: DbPool, config: AppConfig) -> Router {
 
     // Public routes (no auth required)
     let public_routes = Router::new()
+        .route("/", get(|| async {
+            axum::Json(serde_json::json!({
+                "service": "RARA Enterprise ERP Backend",
+                "version": env!("CARGO_PKG_VERSION"),
+                "status": "online"
+            }))
+        }))
         .route("/api/v1/auth/login", post(auth_handlers::login))
         .route("/api/v1/auth/refresh", post(auth_handlers::refresh))
         .route("/api/v1/webhooks/razorpay", post(payment_handlers::razorpay_webhook))

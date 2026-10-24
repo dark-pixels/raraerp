@@ -22,19 +22,22 @@
     {
       "source": "/api/(.*)",
       "destination": {
-        "service": "backend"
+        "service": "backend",
+        "path": "/api/$1"
       }
     },
     {
       "source": "/health",
       "destination": {
-        "service": "backend"
+        "service": "backend",
+        "path": "/health"
       }
     },
     {
       "source": "/(.*)",
       "destination": {
-        "service": "frontend"
+        "service": "frontend",
+        "path": "/$1"
       }
     }
   ]
