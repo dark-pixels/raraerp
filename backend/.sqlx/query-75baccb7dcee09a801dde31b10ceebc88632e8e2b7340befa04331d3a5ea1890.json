@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT business_name, payment_terms_days, is_active FROM suppliers WHERE id = $1 FOR UPDATE",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "business_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "payment_terms_days",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "is_active",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "75baccb7dcee09a801dde31b10ceebc88632e8e2b7340befa04331d3a5ea1890"
+}

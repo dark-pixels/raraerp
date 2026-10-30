@@ -1,0 +1,88 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT si.id, si.invoice_number, si.invoice_date, si.grand_total, si.amount_paid, si.outstanding_amount,\n                  si.due_date, si.status, si.customer_id,\n                  c.name AS \"customer_name?\", c.phone AS \"customer_phone?\",\n                  (si.due_date < $1) AS \"is_overdue!\"\n           FROM sales_invoices si LEFT JOIN customers c ON c.id = si.customer_id\n           WHERE si.outstanding_amount > 0 AND si.status <> 'cancelled'\n           ORDER BY si.due_date ASC NULLS LAST",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "invoice_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "invoice_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 3,
+        "name": "grand_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "amount_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "due_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 7,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "customer_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "customer_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "customer_phone?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "is_overdue!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "b644a269d1d5053ec62d04d6873be267647d8c212a1445099303c59e10ff6c50"
+}

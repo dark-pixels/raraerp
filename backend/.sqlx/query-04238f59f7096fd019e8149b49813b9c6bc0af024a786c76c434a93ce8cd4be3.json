@@ -1,0 +1,178 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT po.*, s.business_name AS supplier_name, s.phone AS supplier_phone, s.gstin AS supplier_gstin,\n                  u.full_name AS \"created_by_name?\"\n           FROM purchase_orders po\n           JOIN suppliers s ON s.id = po.supplier_id\n           LEFT JOIN users u ON u.id = po.created_by\n           WHERE po.id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "po_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "supplier_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "supplier_invoice_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "purchase_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 5,
+        "name": "invoice_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 6,
+        "name": "subtotal",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "discount_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "taxable_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "gst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "freight",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "other_charges",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 12,
+        "name": "grand_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 13,
+        "name": "advance_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 14,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 15,
+        "name": "payment_terms_days",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 16,
+        "name": "due_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 17,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 18,
+        "name": "payment_status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 19,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 20,
+        "name": "created_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 21,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 22,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 23,
+        "name": "supplier_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 24,
+        "name": "supplier_phone",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 25,
+        "name": "supplier_gstin",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 26,
+        "name": "created_by_name?",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "04238f59f7096fd019e8149b49813b9c6bc0af024a786c76c434a93ce8cd4be3"
+}

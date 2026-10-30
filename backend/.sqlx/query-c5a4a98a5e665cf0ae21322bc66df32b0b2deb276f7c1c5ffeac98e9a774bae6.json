@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO payment_gateway_events (gateway, event_type, event_id, payload)\n           VALUES ('razorpay', $1, $2, $3) ON CONFLICT (event_id) DO NOTHING",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Jsonb"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c5a4a98a5e665cf0ae21322bc66df32b0b2deb276f7c1c5ffeac98e9a774bae6"
+}

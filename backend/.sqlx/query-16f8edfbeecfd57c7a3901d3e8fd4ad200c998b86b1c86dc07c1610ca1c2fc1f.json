@@ -1,0 +1,90 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT si.invoice_number, si.invoice_date, c.name AS \"customer_name?\", c.gstin AS \"customer_gstin?\",\n                  si.taxable_value, si.cgst_amount, si.sgst_amount, si.igst_amount,\n                  si.grand_total, si.amount_paid, si.outstanding_amount, si.status\n           FROM sales_invoices si LEFT JOIN customers c ON c.id = si.customer_id\n           WHERE ($1::date IS NULL OR si.invoice_date >= $1) AND ($2::date IS NULL OR si.invoice_date <= $2)\n             AND ($3::text IS NULL OR si.status = $3)\n           ORDER BY si.invoice_date DESC, si.invoice_number DESC LIMIT 5000",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "invoice_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "invoice_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 2,
+        "name": "customer_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "customer_gstin?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "taxable_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "cgst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "sgst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "igst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "grand_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "amount_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "status",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "16f8edfbeecfd57c7a3901d3e8fd4ad200c998b86b1c86dc07c1610ca1c2fc1f"
+}

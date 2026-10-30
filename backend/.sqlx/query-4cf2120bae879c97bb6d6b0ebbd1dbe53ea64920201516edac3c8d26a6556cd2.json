@@ -1,0 +1,82 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT po.id, po.po_number, po.purchase_date, po.grand_total, po.advance_paid, po.outstanding_amount,\n                  po.due_date, po.payment_status, po.supplier_id, s.business_name AS supplier_name,\n                  (po.due_date < $1) AS \"is_overdue!\"\n           FROM purchase_orders po JOIN suppliers s ON s.id = po.supplier_id\n           WHERE po.outstanding_amount > 0 AND po.status <> 'cancelled'\n           ORDER BY po.due_date ASC NULLS LAST",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "po_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "purchase_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 3,
+        "name": "grand_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "advance_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "due_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 7,
+        "name": "payment_status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "supplier_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "supplier_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "is_overdue!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "4cf2120bae879c97bb6d6b0ebbd1dbe53ea64920201516edac3c8d26a6556cd2"
+}

@@ -1,0 +1,47 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT poi.id, poi.quantity, poi.received_quantity, poi.taxable_value, p.name\n               FROM purchase_order_items poi JOIN products p ON p.id = poi.product_id\n               WHERE poi.purchase_order_id = $1 AND poi.product_id = $2\n               ORDER BY poi.quantity - poi.received_quantity DESC LIMIT 1 FOR UPDATE OF poi",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "quantity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 2,
+        "name": "received_quantity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "taxable_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "name",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "013235981df8a9d863497caeec2bab6b9d05a89b720dff6cdb810f1d837b44dc"
+}

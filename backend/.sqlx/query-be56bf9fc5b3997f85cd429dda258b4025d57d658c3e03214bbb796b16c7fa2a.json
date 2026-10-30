@@ -1,0 +1,82 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.name, p.hsn_code, sii.quantity, sii.unit_price, sii.discount_percent, sii.taxable_value,\n                  sii.gst_rate, sii.cgst_amount, sii.sgst_amount, sii.igst_amount, sii.total\n           FROM sales_invoice_items sii JOIN products p ON p.id = sii.product_id\n           WHERE sii.invoice_id = $1 ORDER BY p.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "hsn_code",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "quantity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "unit_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "discount_percent",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "taxable_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "gst_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "cgst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "sgst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "igst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "total",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "be56bf9fc5b3997f85cd429dda258b4025d57d658c3e03214bbb796b16c7fa2a"
+}

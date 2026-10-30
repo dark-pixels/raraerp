@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT po_number, supplier_id, status, advance_paid, outstanding_amount FROM purchase_orders WHERE id = $1 FOR UPDATE",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "po_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "supplier_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "advance_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "113d6c543ce65947fefd5061e6ec340d62f89b14bf96440f02e391ec95e96484"
+}

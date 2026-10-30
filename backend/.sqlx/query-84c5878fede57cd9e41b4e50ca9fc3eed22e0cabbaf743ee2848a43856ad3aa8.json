@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT al.id, al.action, al.resource_type, al.resource_id, al.changes, al.ip_address, al.created_at,\n                  u.full_name AS user_name, u.email\n           FROM audit_logs al JOIN users u ON u.id = al.user_id\n           WHERE ($1::text IS NULL OR al.action ILIKE '%' || $1 || '%'\n                  OR al.resource_type ILIKE '%' || $1 || '%' OR u.email ILIKE '%' || $1 || '%')\n             AND ($2::date IS NULL OR al.created_at >= $2::date)\n             AND ($3::date IS NULL OR al.created_at < $3::date + 1)\n           ORDER BY al.created_at DESC\n           LIMIT $4 OFFSET $5",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "action",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "resource_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "resource_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "changes",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 5,
+        "name": "ip_address",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "user_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "email",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Date",
+        "Date",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "84c5878fede57cd9e41b4e50ca9fc3eed22e0cabbaf743ee2848a43856ad3aa8"
+}

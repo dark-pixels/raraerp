@@ -1,0 +1,99 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT e.id, e.category, e.amount, e.date, e.payment_method, e.reference, e.description,\n                  e.approval_status, e.created_at, e.created_by, u.full_name AS \"created_by_name?\", a.full_name AS \"approved_by_name?\",\n                  COUNT(*) OVER () AS \"full_count!\"\n           FROM expenses e\n           LEFT JOIN users u ON u.id = e.created_by\n           LEFT JOIN users a ON a.id = e.approved_by\n           WHERE ($1::text IS NULL OR e.approval_status = $1)\n             AND ($2::text IS NULL OR e.category ILIKE '%' || $2 || '%' OR e.description ILIKE '%' || $2 || '%')\n             AND ($3::date IS NULL OR e.date >= $3)\n             AND ($4::date IS NULL OR e.date <= $4)\n           ORDER BY e.date DESC, e.created_at DESC\n           LIMIT $5 OFFSET $6",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "category",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 4,
+        "name": "payment_method",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "reference",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "approval_status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 9,
+        "name": "created_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 10,
+        "name": "created_by_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "approved_by_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "full_count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Date",
+        "Date",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "19db5e5f4120427f15df533d1c6cc77d7d3257804400058a8c36f7a7b88fd144"
+}

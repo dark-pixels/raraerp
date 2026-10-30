@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE payment_gateway_events SET processed = true WHERE event_id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8a0b7d74f0bae6ae6f6c1764adbfbeeed7d60631e9c1c79befa27f8e4be074e8"
+}

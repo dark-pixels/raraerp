@@ -1,0 +1,128 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, name, business_name, phone, email, billing_address, shipping_address, gstin, gst_verified,\n                  customer_type, credit_limit, credit_period_days, opening_balance, outstanding_balance,\n                  notes, is_active, created_at, COUNT(*) OVER () AS \"full_count!\"\n           FROM customers\n           WHERE ($1::text IS NULL OR name ILIKE '%' || $1 || '%' OR business_name ILIKE '%' || $1 || '%'\n                  OR phone ILIKE '%' || $1 || '%' OR gstin ILIKE '%' || $1 || '%' OR email ILIKE '%' || $1 || '%')\n             AND ($2::text IS NULL OR customer_type = $2)\n             AND ($3::text IS NULL OR ($3 = 'active' AND is_active) OR ($3 = 'inactive' AND NOT is_active)\n                  OR ($3 = 'outstanding' AND outstanding_balance > 0))\n           ORDER BY is_active DESC, name\n           LIMIT $4 OFFSET $5",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "business_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "phone",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "billing_address",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "shipping_address",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "gstin",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "gst_verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 9,
+        "name": "customer_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "credit_limit",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "credit_period_days",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "opening_balance",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 13,
+        "name": "outstanding_balance",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 14,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 15,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 16,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 17,
+        "name": "full_count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "f4f44e506d6ff40d7babebf52c5e665f6989be7e289f664cdf44978c3cc72acb"
+}

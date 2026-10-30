@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE payment_gateway_orders SET status = 'captured', gateway_payment_id = $1 WHERE gateway_order_id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2de211c99dab4000edc1fc1b70f13942456ae9f394276a89b0e82902d0224c0f"
+}

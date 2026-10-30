@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE expenses SET approval_status = $1, approved_by = $2 WHERE id = $3 AND approval_status = 'pending'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bc419bf0e2e690b610ed8b6b671c08343479313220010c1794c824533b001c4a"
+}

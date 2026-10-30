@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT ib.product_id, ib.on_hand, ib.available, ib.reserved, p.name AS product_name, p.sku, p.barcode\n           FROM inventory_balances ib\n           JOIN products p ON p.id = ib.product_id\n           WHERE ib.location_id = $1 AND ib.on_hand > 0\n           ORDER BY p.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "product_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "on_hand",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 2,
+        "name": "available",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "reserved",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "product_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "sku",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "barcode",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "03707b60b2c3b52162b073aa94756ca10ba1fe3052b23d9d698bdb8af920e787"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE products SET image_url = NULL WHERE id = $1 AND image_url = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "406d2837ea2b67b0c258fc8876296e7022756bbf270fca9a6da7b9b8b46e8d20"
+}

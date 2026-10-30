@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT rl.id FROM rack_locations rl JOIN warehouses w ON w.id = rl.warehouse_id\n           WHERE rl.is_active AND w.is_active\n           ORDER BY (rl.rack_code = 'GENERAL') DESC, w.created_at, rl.created_at LIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "b2c5fa410ed584d525d49d12a1762956c1818e79513c446ffac1ca270355fa5b"
+}

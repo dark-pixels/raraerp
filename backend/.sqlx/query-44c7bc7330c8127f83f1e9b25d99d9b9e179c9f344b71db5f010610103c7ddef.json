@@ -1,0 +1,56 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM (\n               SELECT 'invoice' AS \"type!\", si.id AS \"id!\", si.invoice_number AS \"reference!\",\n                      si.grand_total AS \"amount!\", si.status AS \"status!\", si.created_at AS \"timestamp!\",\n                      c.name AS \"party?\"\n               FROM sales_invoices si LEFT JOIN customers c ON c.id = si.customer_id\n               UNION ALL\n               SELECT 'purchase', po.id, po.po_number, po.grand_total, po.status, po.created_at, s.business_name\n               FROM purchase_orders po JOIN suppliers s ON s.id = po.supplier_id\n               UNION ALL\n               SELECT 'payment_' || p.direction, p.id, COALESCE(si.invoice_number, po.po_number, p.payment_method),\n                      p.amount, p.status, p.created_at, COALESCE(c.name, s.business_name)\n               FROM payments p\n               LEFT JOIN sales_invoices si ON p.reference_type = 'invoice' AND si.id = p.reference_id\n               LEFT JOIN purchase_orders po ON p.reference_type = 'purchase' AND po.id = p.reference_id\n               LEFT JOIN customers c ON c.id = p.customer_id\n               LEFT JOIN suppliers s ON s.id = p.supplier_id\n           ) a ORDER BY 6 DESC LIMIT 20",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "reference!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "amount!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "status!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "timestamp!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "party?",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "44c7bc7330c8127f83f1e9b25d99d9b9e179c9f344b71db5f010610103c7ddef"
+}

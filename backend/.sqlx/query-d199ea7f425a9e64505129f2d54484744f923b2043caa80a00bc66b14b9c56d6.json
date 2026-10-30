@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE expenses SET\n             category = COALESCE($1, category),\n             amount = COALESCE($2, amount),\n             date = COALESCE($3, date),\n             payment_method = COALESCE($4, payment_method),\n             reference = CASE WHEN $5 THEN $6 ELSE reference END,\n             description = CASE WHEN $7 THEN $8 ELSE description END\n           WHERE id = $9",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Numeric",
+        "Date",
+        "Text",
+        "Bool",
+        "Text",
+        "Bool",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d199ea7f425a9e64505129f2d54484744f923b2043caa80a00bc66b14b9c56d6"
+}

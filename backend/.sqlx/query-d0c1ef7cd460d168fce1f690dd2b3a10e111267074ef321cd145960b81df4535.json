@@ -1,0 +1,84 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT po.po_number, po.purchase_date, s.business_name, po.supplier_invoice_number,\n                  po.taxable_value, po.gst_amount, po.grand_total, po.advance_paid,\n                  po.outstanding_amount, po.status, po.payment_status\n           FROM purchase_orders po JOIN suppliers s ON s.id = po.supplier_id\n           WHERE ($1::date IS NULL OR po.purchase_date >= $1) AND ($2::date IS NULL OR po.purchase_date <= $2)\n             AND ($3::text IS NULL OR po.status = $3)\n           ORDER BY po.purchase_date DESC LIMIT 5000",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "po_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "purchase_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 2,
+        "name": "business_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "supplier_invoice_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "taxable_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "gst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "grand_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "advance_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "payment_status",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "d0c1ef7cd460d168fce1f690dd2b3a10e111267074ef321cd145960b81df4535"
+}

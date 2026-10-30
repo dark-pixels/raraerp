@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO gst_verification_records (gstin, status, legal_name, trade_name, registration_type, state_jurisdiction, verified_by)\n                   VALUES ($1,$2,$3,$4,$5,$6,$7)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2f32f7dfc828e7c6bf0d71b2025de557aae8485052c6b77c8d8bce285af48d97"
+}

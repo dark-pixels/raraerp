@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, gstin, status, legal_name, trade_name, verified_at FROM gst_verification_records ORDER BY verified_at DESC LIMIT 100",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "gstin",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "legal_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "trade_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "verified_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "6dd8f57666927ba42bb0820d400a90c450a8c9a5aa0888ac0f6db5422e012ff9"
+}

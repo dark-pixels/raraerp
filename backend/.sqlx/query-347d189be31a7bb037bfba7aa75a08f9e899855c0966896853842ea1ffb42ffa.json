@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.id, p.name, p.sku, SUM(sii.quantity) AS \"quantity!\", SUM(sii.total) AS \"revenue!\"\n           FROM sales_invoice_items sii\n           JOIN sales_invoices si ON si.id = sii.invoice_id\n           JOIN products p ON p.id = sii.product_id\n           WHERE si.status <> 'cancelled' AND date_trunc('month', si.invoice_date) = date_trunc('month', $1::date)\n           GROUP BY p.id ORDER BY 5 DESC LIMIT 10",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "sku",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "quantity!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "revenue!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      null,
+      null
+    ]
+  },
+  "hash": "347d189be31a7bb037bfba7aa75a08f9e899855c0966896853842ea1ffb42ffa"
+}

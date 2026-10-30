@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO notifications (user_id, type, title, body, reference_type)\n           SELECT id, 'low_stock', $1, $2, 'inventory' FROM users\n           WHERE role IN ('super_admin', 'admin') AND is_active = true",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "09c82098d3286b5efe68fd96770187f2ff57fd6c612ebda62d9140efe6a0711d"
+}

@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO payments (payment_date, amount, payment_method, direction, reference_type, reference_id, supplier_id,\n               status, recorded_by, transaction_reference, notes)\n           VALUES ($1,$2,$3,'outbound','purchase',$4,$5,'verified',$6,$7,$8)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Numeric",
+        "Text",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fa5f93cb30af6028c74bff957587acbd65daeacde66ee4eee2e0e082c0ec1d55"
+}

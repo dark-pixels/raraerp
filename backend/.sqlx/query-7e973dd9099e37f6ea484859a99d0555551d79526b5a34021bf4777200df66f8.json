@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO login_events (user_id, ip_address, user_agent, success) VALUES ($1, $2, $3, true)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7e973dd9099e37f6ea484859a99d0555551d79526b5a34021bf4777200df66f8"
+}

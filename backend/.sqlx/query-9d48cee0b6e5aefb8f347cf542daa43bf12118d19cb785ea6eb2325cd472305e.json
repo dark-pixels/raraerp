@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO expenses (category, amount, date, payment_method, reference, description, created_by, approved_by, approval_status)\n           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Numeric",
+        "Date",
+        "Text",
+        "Text",
+        "Text",
+        "Uuid",
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "9d48cee0b6e5aefb8f347cf542daa43bf12118d19cb785ea6eb2325cd472305e"
+}

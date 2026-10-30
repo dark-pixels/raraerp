@@ -1,0 +1,47 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT COALESCE(p.hsn_code, 'N/A') AS \"hsn!\", sii.gst_rate,\n                  SUM(sii.quantity) AS \"quantity!\", SUM(sii.taxable_value) AS \"taxable!\",\n                  SUM(sii.cgst_amount + sii.sgst_amount + sii.igst_amount) AS \"tax!\"\n           FROM sales_invoice_items sii\n           JOIN sales_invoices si ON si.id = sii.invoice_id\n           JOIN products p ON p.id = sii.product_id\n           WHERE si.status <> 'cancelled'\n             AND ($1::date IS NULL OR si.invoice_date >= $1) AND ($2::date IS NULL OR si.invoice_date <= $2)\n           GROUP BY 1, 2 ORDER BY 1, 2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "hsn!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "gst_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 2,
+        "name": "quantity!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "taxable!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "tax!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date"
+      ]
+    },
+    "nullable": [
+      null,
+      false,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "e5b5a8c1d2d6136fb85cc1eb5b71c8bca052dbf218f0ff12f8f38781f3e14cfb"
+}

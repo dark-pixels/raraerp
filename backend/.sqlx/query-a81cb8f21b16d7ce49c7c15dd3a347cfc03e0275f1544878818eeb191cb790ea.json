@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO user_permission_overrides (user_id, permission_id, granted)\n           SELECT $1, rp.permission_id, false FROM role_permissions rp\n           JOIN permissions p ON p.id = rp.permission_id\n           WHERE rp.role = $3 AND NOT (p.key = ANY($2))",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "TextArray",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a81cb8f21b16d7ce49c7c15dd3a347cfc03e0275f1544878818eeb191cb790ea"
+}

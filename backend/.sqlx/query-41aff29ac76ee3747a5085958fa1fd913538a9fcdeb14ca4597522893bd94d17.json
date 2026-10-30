@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO user_permission_overrides (user_id, permission_id, granted)\n           SELECT $1, p.id, true FROM permissions p\n           WHERE p.key = ANY($2)\n             AND NOT EXISTS (SELECT 1 FROM role_permissions rp WHERE rp.role = $3 AND rp.permission_id = p.id)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "TextArray",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "41aff29ac76ee3747a5085958fa1fd913538a9fcdeb14ca4597522893bd94d17"
+}

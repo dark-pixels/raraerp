@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT location_id, available AS \"available!\"\n           FROM inventory_balances\n           WHERE product_id = $1 AND available > 0\n           ORDER BY available DESC\n           FOR UPDATE",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "location_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "available!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true
+    ]
+  },
+  "hash": "9c968c02525b0ca52ae3589985f12b6b5c413233c2e42d9bc7f774a0d5c291e1"
+}

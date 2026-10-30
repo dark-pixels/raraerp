@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE product_images SET is_primary = false WHERE product_id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "09ccf3a4f87dcd8aeaa7e2bc69309937f5bd06dabdd171b04b96409616b82428"
+}

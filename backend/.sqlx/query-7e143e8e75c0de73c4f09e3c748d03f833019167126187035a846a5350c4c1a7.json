@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE sales_invoices SET status = 'overdue', updated_at = NOW() WHERE due_date < $1 AND outstanding_amount > 0 AND status IN ('issued', 'partially_paid')",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7e143e8e75c0de73c4f09e3c748d03f833019167126187035a846a5350c4c1a7"
+}

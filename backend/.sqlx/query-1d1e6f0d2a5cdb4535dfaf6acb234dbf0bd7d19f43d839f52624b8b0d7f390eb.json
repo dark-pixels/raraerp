@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id FROM units_of_measure WHERE LOWER(name) = LOWER($1) OR LOWER(abbreviation) = LOWER($1) LIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "1d1e6f0d2a5cdb4535dfaf6acb234dbf0bd7d19f43d839f52624b8b0d7f390eb"
+}

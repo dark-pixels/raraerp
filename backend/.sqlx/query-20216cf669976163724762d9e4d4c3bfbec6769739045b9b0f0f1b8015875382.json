@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT COUNT(*) AS \"count!\" FROM payments p\n           LEFT JOIN customers c ON c.id = p.customer_id\n           LEFT JOIN suppliers s ON s.id = p.supplier_id\n           LEFT JOIN sales_invoices si ON p.reference_type = 'invoice' AND si.id = p.reference_id\n           LEFT JOIN purchase_orders po ON p.reference_type = 'purchase' AND po.id = p.reference_id\n           WHERE ($1::text IS NULL OR p.direction = $1)\n             AND ($2::text IS NULL OR p.payment_method = $2)\n             AND ($3::text IS NULL OR c.name ILIKE '%' || $3 || '%' OR s.business_name ILIKE '%' || $3 || '%'\n                  OR p.transaction_reference ILIKE '%' || $3 || '%'\n                  OR si.invoice_number ILIKE '%' || $3 || '%' OR po.po_number ILIKE '%' || $3 || '%')\n             AND ($4::date IS NULL OR p.payment_date >= $4)\n             AND ($5::date IS NULL OR p.payment_date <= $5)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Date",
+        "Date"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "20216cf669976163724762d9e4d4c3bfbec6769739045b9b0f0f1b8015875382"
+}

@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM expenses WHERE id = $1 RETURNING category, amount, date",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "category",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 2,
+        "name": "date",
+        "type_info": "Date"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "fea5a17d16a0c25bdfb191e4a98b3a4ea160956214bf69cdce8b07ffb13bc39b"
+}

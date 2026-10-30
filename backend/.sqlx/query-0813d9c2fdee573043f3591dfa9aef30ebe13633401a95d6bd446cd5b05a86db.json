@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE suppliers SET\n            business_name = COALESCE($1, business_name),\n            contact_person = COALESCE($2, contact_person),\n            phone = COALESCE($3, phone),\n            email = COALESCE($4, email),\n            address = COALESCE($5, address),\n            gstin = COALESCE($6, gstin),\n            payment_terms_days = COALESCE($7, payment_terms_days),\n            credit_limit = COALESCE($8, credit_limit),\n            notes = COALESCE($9, notes),\n            is_active = COALESCE($10, is_active)\n           WHERE id = $11",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Int4",
+        "Numeric",
+        "Text",
+        "Bool",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0813d9c2fdee573043f3591dfa9aef30ebe13633401a95d6bd446cd5b05a86db"
+}

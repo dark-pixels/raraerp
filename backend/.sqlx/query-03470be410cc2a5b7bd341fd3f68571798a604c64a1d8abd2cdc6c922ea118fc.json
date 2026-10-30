@@ -1,0 +1,83 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.sku, p.name, c.name AS \"category?\", b.name AS \"brand?\", p.hsn_code,\n                  COALESCE(SUM(ib.on_hand), 0) AS \"total_stock!\",\n                  COALESCE(SUM(ib.available), 0) AS \"available!\",\n                  p.reorder_threshold, p.purchase_price, p.retail_price,\n                  COALESCE(SUM(ib.on_hand), 0) * p.purchase_price AS \"inventory_value!\"\n           FROM products p\n           LEFT JOIN categories c ON c.id = p.category_id\n           LEFT JOIN brands b ON b.id = p.brand_id\n           LEFT JOIN inventory_balances ib ON ib.product_id = p.id\n           WHERE p.status = 'active' AND ($1::uuid IS NULL OR p.category_id = $1)\n           GROUP BY p.id, c.name, b.name\n           HAVING NOT $2 OR COALESCE(SUM(ib.available), 0) < p.reorder_threshold\n           ORDER BY p.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "sku",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "category?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "brand?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "hsn_code",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "total_stock!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "available!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "reorder_threshold",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "purchase_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "retail_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "inventory_value!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      null,
+      null,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "03470be410cc2a5b7bd341fd3f68571798a604c64a1d8abd2cdc6c922ea118fc"
+}

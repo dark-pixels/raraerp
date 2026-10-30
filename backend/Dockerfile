@@ -1,11 +1,12 @@
-# Build the Rust API server. Railway passes service variables as build args;
-# DATABASE_URL is needed at compile time for SQLx's checked queries.
+# Build the Rust API server. SQLx checks queries against the metadata in
+# .sqlx/ (regenerate with `cargo sqlx prepare -- --bin server`), so the build
+# needs no database access.
 FROM rust:1-bookworm AS builder
 WORKDIR /app
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+ENV SQLX_OFFLINE=true
 
 COPY Cargo.toml Cargo.lock ./
+COPY .sqlx ./.sqlx
 COPY migrations ./migrations
 COPY src ./src
 RUN cargo build --release --bin server

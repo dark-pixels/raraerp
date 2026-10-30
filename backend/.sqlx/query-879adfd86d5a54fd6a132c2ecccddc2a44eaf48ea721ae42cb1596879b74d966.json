@@ -1,0 +1,76 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT i.id, i.filename, i.status, i.mode, i.total_rows, i.success_count, i.error_count,\n                  i.created_at, i.completed_at, u.full_name AS \"created_by_name?\"\n           FROM inventory_imports i LEFT JOIN users u ON u.id = i.created_by\n           ORDER BY i.created_at DESC LIMIT $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "filename",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "mode",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "total_rows",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "success_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "error_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "completed_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 9,
+        "name": "created_by_name?",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "879adfd86d5a54fd6a132c2ecccddc2a44eaf48ea721ae42cb1596879b74d966"
+}

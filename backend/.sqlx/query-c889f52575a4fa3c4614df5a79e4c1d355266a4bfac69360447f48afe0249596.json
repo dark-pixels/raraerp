@@ -1,0 +1,118 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM payments WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "payment_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 2,
+        "name": "amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "currency",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "payment_method",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "direction",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "reference_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "reference_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 8,
+        "name": "customer_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "supplier_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 10,
+        "name": "transaction_reference",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "gateway_reference",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "recorded_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 14,
+        "name": "verified_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 15,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "c889f52575a4fa3c4614df5a79e4c1d355266a4bfac69360447f48afe0249596"
+}

@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM (\n               SELECT si.invoice_date AS \"date!\", si.created_at AS \"at!\", 'invoice' AS \"kind!\",\n                      si.invoice_number AS \"reference!\", si.grand_total AS \"debit!\", 0::numeric AS \"credit!\",\n                      si.id AS \"document_id!\", si.status AS \"status!\"\n               FROM sales_invoices si WHERE si.customer_id = $1 AND si.status <> 'cancelled'\n               UNION ALL\n               SELECT p.payment_date, p.created_at, 'payment', COALESCE(p.transaction_reference, p.payment_method),\n                      0::numeric, p.amount, p.id, p.status\n               FROM payments p WHERE p.customer_id = $1 AND p.direction = 'inbound' AND p.status = 'verified'\n               UNION ALL\n               SELECT cn.created_at::date, cn.created_at, 'credit_note', si.invoice_number,\n                      0::numeric, cn.total, cn.id, cn.status\n               FROM credit_notes cn JOIN sales_invoices si ON si.id = cn.original_invoice_id\n               WHERE si.customer_id = $1 AND cn.status <> 'cancelled'\n           ) e ORDER BY 1, 2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "date!",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 1,
+        "name": "at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 2,
+        "name": "kind!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "reference!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "debit!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "credit!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "document_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 7,
+        "name": "status!",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "1fe96b7fab7dc50d09364119b79a5c3c45668b96d79e9b250068fc46f2aa5642"
+}

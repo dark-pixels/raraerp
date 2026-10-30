@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT COALESCE(SUM(taxable_value), 0) AS \"taxable!\", COALESCE(SUM(gst_amount), 0) AS \"gst!\"\n           FROM purchase_orders\n           WHERE status NOT IN ('cancelled', 'draft')\n             AND ($1::date IS NULL OR purchase_date >= $1) AND ($2::date IS NULL OR purchase_date <= $2)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "taxable!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 1,
+        "name": "gst!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "569a1d36cdaa1586929859ecf6c9f44c297d8f6d213ee313b60b98b8543dc3da"
+}

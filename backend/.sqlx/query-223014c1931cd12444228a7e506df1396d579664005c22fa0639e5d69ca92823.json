@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE suppliers SET outstanding_balance = outstanding_balance + $1 WHERE id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "223014c1931cd12444228a7e506df1396d579664005c22fa0639e5d69ca92823"
+}

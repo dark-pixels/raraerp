@@ -1,0 +1,31 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO suppliers (business_name, contact_person, phone, email, address, gstin, payment_terms_days,\n               credit_limit, opening_balance, outstanding_balance, notes)\n           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$9,$10) RETURNING id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Int4",
+        "Numeric",
+        "Numeric",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c28d8e76450ea3c1d525342133d508832345c4e9c0faaad62bbeaa1f09f52fd8"
+}

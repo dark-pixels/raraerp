@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO payment_gateway_orders (invoice_id, gateway, gateway_order_id, amount, currency, status)\n           VALUES ($1, 'razorpay', $2, $3, 'INR', 'created')",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Numeric"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "75270be525f06e2f1b2bd3975340dad70f9d6895089d9c177def33ae523cea85"
+}

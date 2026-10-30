@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, status, legal_name, trade_name, registration_type, state_jurisdiction,\n                  registration_date, verified_at\n           FROM gst_verification_records\n           WHERE gstin = $1 AND status NOT IN ('pending', 'unknown')\n             AND verified_at > NOW() - INTERVAL '24 hours'\n           ORDER BY verified_at DESC LIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "legal_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "trade_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "registration_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "state_jurisdiction",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "registration_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 7,
+        "name": "verified_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "87e654c72376b063042bb6c2466a172930ad3de8919ca896c21b3595bee9bddf"
+}

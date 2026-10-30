@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE products SET\n                       name = COALESCE($1, name), barcode = COALESCE($2, barcode),\n                       category_id = COALESCE($3, category_id), brand_id = COALESCE($4, brand_id),\n                       hsn_code = COALESCE($5, hsn_code), purchase_price = COALESCE($6, purchase_price),\n                       retail_price = COALESCE($7, retail_price), wholesale_price = COALESCE($8, wholesale_price),\n                       gst_rate = COALESCE($9, gst_rate), reorder_threshold = COALESCE($10, reorder_threshold),\n                       updated_at = NOW()\n                   WHERE id = $11",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d882a5ad594e0c404f1085c259daf8b0c053d46bb204aaa0c3dea079c2de5f2e"
+}

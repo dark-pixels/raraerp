@@ -1,0 +1,25 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT EXISTS(SELECT 1 FROM rack_locations WHERE warehouse_id = $1 AND rack_code = $2\n                         AND shelf IS NOT DISTINCT FROM $3 AND bin IS NOT DISTINCT FROM $4) AS \"e!\"",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "e!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "d688376710488f8bf91e281dab19174e1800015dea220211924560beca3935cc"
+}

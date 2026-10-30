@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO stock_count_items (count_id, product_id, system_quantity)\n           SELECT $1, product_id, on_hand FROM inventory_balances WHERE location_id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c361cd5dd837593e3d2da8dda267198911d7a88313e80c0e2078803f2d91744e"
+}

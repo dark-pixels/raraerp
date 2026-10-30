@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT row_number, error_message, raw_data FROM inventory_import_errors WHERE import_id = $1 ORDER BY row_number LIMIT 500",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "row_number",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "error_message",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "raw_data",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "4bac70f64da956dc2fe4d6af52049839d9d1b267f021ffc1b8408075d5a8413d"
+}

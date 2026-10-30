@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        UPDATE refresh_tokens rt SET revoked_at = NOW()\n        FROM users u\n        WHERE u.id = rt.user_id\n          AND rt.token_hash = $1\n          AND rt.expires_at > NOW()\n          AND rt.revoked_at IS NULL\n        RETURNING rt.user_id, u.email, u.role, u.is_active\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "role",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "is_active",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3aafc6f3e69074f78d3e534573e48bc7a37de07c3a164ff4ce80568387022e32"
+}

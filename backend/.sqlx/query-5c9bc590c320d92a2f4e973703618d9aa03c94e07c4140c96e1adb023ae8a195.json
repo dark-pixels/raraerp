@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT name, status, gst_rate, retail_price, wholesale_price, min_selling_price FROM products WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "gst_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "retail_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "wholesale_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "min_selling_price",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "5c9bc590c320d92a2f4e973703618d9aa03c94e07c4140c96e1adb023ae8a195"
+}

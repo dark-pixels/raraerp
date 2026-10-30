@@ -1,0 +1,101 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT po.id, po.po_number, po.supplier_id, po.supplier_invoice_number, po.purchase_date,\n                  po.grand_total, po.advance_paid, po.outstanding_amount, po.status, po.payment_status,\n                  po.due_date, po.created_at, s.business_name AS supplier_name\n           FROM purchase_orders po\n           JOIN suppliers s ON s.id = po.supplier_id\n           WHERE ($1::text IS NULL OR po.status = $1)\n             AND ($2::uuid IS NULL OR po.supplier_id = $2)\n             AND ($3::text IS NULL OR po.payment_status = $3)\n             AND ($4::text IS NULL OR po.po_number ILIKE '%' || $4 || '%' OR s.business_name ILIKE '%' || $4 || '%'\n                  OR po.supplier_invoice_number ILIKE '%' || $4 || '%')\n             AND ($5::date IS NULL OR po.purchase_date >= $5)\n             AND ($6::date IS NULL OR po.purchase_date <= $6)\n           ORDER BY po.purchase_date DESC, po.created_at DESC\n           LIMIT $7 OFFSET $8",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "po_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "supplier_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "supplier_invoice_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "purchase_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 5,
+        "name": "grand_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "advance_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "payment_status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "due_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "supplier_name",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid",
+        "Text",
+        "Text",
+        "Date",
+        "Date",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "02782287e5be59dfb712e1d7ca9136e91ec9dd047a9d5924369a51c8897e625b"
+}

@@ -1,0 +1,27 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT COUNT(*) AS \"count!\" FROM purchase_orders po JOIN suppliers s ON s.id = po.supplier_id\n           WHERE ($1::text IS NULL OR po.status = $1)\n             AND ($2::uuid IS NULL OR po.supplier_id = $2)\n             AND ($3::text IS NULL OR po.payment_status = $3)\n             AND ($4::text IS NULL OR po.po_number ILIKE '%' || $4 || '%' OR s.business_name ILIKE '%' || $4 || '%'\n                  OR po.supplier_invoice_number ILIKE '%' || $4 || '%')\n             AND ($5::date IS NULL OR po.purchase_date >= $5)\n             AND ($6::date IS NULL OR po.purchase_date <= $6)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid",
+        "Text",
+        "Text",
+        "Date",
+        "Date"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "ce6b9bb5832979665bc6cd0a0330da306f2c09c0e11a73ce298523c819976928"
+}

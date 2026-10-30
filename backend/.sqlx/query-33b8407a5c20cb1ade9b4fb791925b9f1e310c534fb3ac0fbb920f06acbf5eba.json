@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE purchase_orders SET status = 'cancelled', outstanding_amount = 0, updated_at = NOW(),\n               notes = CONCAT_WS(E'\\n', NULLIF(notes, ''), 'Cancelled: ' || $2::text)\n           WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "33b8407a5c20cb1ade9b4fb791925b9f1e310c534fb3ac0fbb920f06acbf5eba"
+}

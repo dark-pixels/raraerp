@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO inventory_balances (product_id, location_id, on_hand) VALUES ($1, $2, $3)\n           ON CONFLICT (product_id, location_id) DO UPDATE\n           SET on_hand = inventory_balances.on_hand + EXCLUDED.on_hand, updated_at = NOW()",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Numeric"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fb48c2b06ef8ae8af0ef3cbb202d6a7251db6a66f916b9b5eeb40e7ec2cd038c"
+}

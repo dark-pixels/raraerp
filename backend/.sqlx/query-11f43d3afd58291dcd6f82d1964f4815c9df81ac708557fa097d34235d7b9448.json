@@ -1,0 +1,196 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT p.*,\n               c.name AS \"category_name?\", b.name AS \"brand_name?\", u.name AS \"unit_name?\",\n               COALESCE((\n                   SELECT json_agg(json_build_object(\n                       'location_id', ib.location_id, 'rack_code', rl.rack_code,\n                       'shelf', rl.shelf, 'bin', rl.bin, 'warehouse_name', w.name,\n                       'on_hand', ib.on_hand, 'available', ib.available) ORDER BY w.name, rl.rack_code)\n                   FROM inventory_balances ib\n                   JOIN rack_locations rl ON rl.id = ib.location_id\n                   JOIN warehouses w ON w.id = rl.warehouse_id\n                   WHERE ib.product_id = p.id AND ib.on_hand > 0\n               ), '[]'::json) AS \"locations!\"\n        FROM products p\n        LEFT JOIN categories c ON c.id = p.category_id\n        LEFT JOIN brands b ON b.id = p.brand_id\n        LEFT JOIN units_of_measure u ON u.id = p.unit_id\n        WHERE p.id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "sku",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "barcode",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "category_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 6,
+        "name": "brand_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 7,
+        "name": "manufacturer",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "image_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "unit_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 10,
+        "name": "purchase_unit_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 11,
+        "name": "sales_unit_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 12,
+        "name": "unit_conversion_factor",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 13,
+        "name": "purchase_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 14,
+        "name": "retail_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 15,
+        "name": "wholesale_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 16,
+        "name": "min_selling_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 17,
+        "name": "gst_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 18,
+        "name": "hsn_code",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 19,
+        "name": "reorder_threshold",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 20,
+        "name": "reorder_quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 21,
+        "name": "primary_supplier_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 22,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 23,
+        "name": "created_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 24,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 25,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 26,
+        "name": "category_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 27,
+        "name": "brand_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 28,
+        "name": "unit_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 29,
+        "name": "locations!",
+        "type_info": "Json"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "11f43d3afd58291dcd6f82d1964f4815c9df81ac708557fa097d34235d7b9448"
+}

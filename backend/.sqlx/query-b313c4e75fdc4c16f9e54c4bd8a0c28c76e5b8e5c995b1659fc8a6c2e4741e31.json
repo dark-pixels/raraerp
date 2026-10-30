@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.name AS \"name!\" FROM products p\n           LEFT JOIN inventory_balances ib ON ib.product_id = p.id\n           WHERE p.status = 'active'\n           GROUP BY p.id\n           HAVING COALESCE(SUM(ib.available), 0) < p.reorder_threshold\n           ORDER BY p.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name!",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "b313c4e75fdc4c16f9e54c4bd8a0c28c76e5b8e5c995b1659fc8a6c2e4741e31"
+}

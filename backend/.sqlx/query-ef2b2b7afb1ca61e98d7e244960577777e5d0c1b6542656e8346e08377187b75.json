@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT business_name, opening_balance, outstanding_balance FROM suppliers WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "business_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "opening_balance",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 2,
+        "name": "outstanding_balance",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "ef2b2b7afb1ca61e98d7e244960577777e5d0c1b6542656e8346e08377187b75"
+}

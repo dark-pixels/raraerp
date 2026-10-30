@@ -1,0 +1,124 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT sm.id, sm.product_id, sm.quantity, sm.movement_type, sm.reference_document,\n                  sm.timestamp, sm.reason, sm.notes, sm.source_location_id, sm.destination_location_id,\n                  p.name AS product_name, p.sku,\n                  src.rack_code AS \"source_rack?\", dst.rack_code AS \"destination_rack?\",\n                  u.full_name AS \"user_name?\",\n                  COALESCE(si.invoice_number, po.po_number) AS \"document_number?\",\n                  COUNT(*) OVER () AS \"full_count!\"\n           FROM stock_movements sm\n           JOIN products p ON p.id = sm.product_id\n           LEFT JOIN rack_locations src ON src.id = sm.source_location_id\n           LEFT JOIN rack_locations dst ON dst.id = sm.destination_location_id\n           LEFT JOIN users u ON u.id = sm.user_id\n           LEFT JOIN sales_invoices si ON si.id::text = sm.reference_document\n           LEFT JOIN purchase_orders po ON po.id::text = sm.reference_document\n           WHERE ($1::uuid IS NULL OR sm.product_id = $1)\n             AND ($2::text IS NULL OR sm.movement_type = $2)\n             AND ($3::text IS NULL OR p.name ILIKE '%' || $3 || '%' OR p.sku ILIKE '%' || $3 || '%')\n             AND ($4::date IS NULL OR sm.timestamp >= $4::date)\n             AND ($5::date IS NULL OR sm.timestamp < $5::date + 1)\n           ORDER BY sm.timestamp DESC\n           LIMIT $6 OFFSET $7",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "product_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "quantity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "movement_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "reference_document",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "timestamp",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "reason",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "source_location_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "destination_location_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 10,
+        "name": "product_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "sku",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "source_rack?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "destination_rack?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "user_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 15,
+        "name": "document_number?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "full_count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Date",
+        "Date",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      null,
+      null
+    ]
+  },
+  "hash": "9b71711eb1b2bdc1b64884e277ff2c5d22d69eda555de3fe934f0b710eba51ad"
+}

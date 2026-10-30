@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT poi.*, p.name AS product_name, p.sku\n           FROM purchase_order_items poi JOIN products p ON p.id = poi.product_id\n           WHERE poi.purchase_order_id = $1 ORDER BY p.name",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "purchase_order_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "product_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "quantity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "unit_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "unit_cost",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "discount_percent",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "taxable_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "gst_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "gst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "received_quantity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 12,
+        "name": "product_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "sku",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "2d7c7be6ef38729ecafe045c1e7792691f6460b5476fca32ed5800a718dcd483"
+}

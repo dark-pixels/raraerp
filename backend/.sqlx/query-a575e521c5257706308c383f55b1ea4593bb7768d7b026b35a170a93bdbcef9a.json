@@ -1,0 +1,77 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT rl.id, rl.warehouse_id, rl.rack_code, rl.shelf, rl.bin, rl.is_active,\n                  w.name AS warehouse_name, wz.name AS \"zone_name?\",\n                  (SELECT COUNT(*) FROM inventory_balances ib WHERE ib.location_id = rl.id AND ib.on_hand > 0) AS \"product_count!\",\n                  (SELECT COALESCE(SUM(ib.on_hand), 0) FROM inventory_balances ib WHERE ib.location_id = rl.id) AS \"total_units!\"\n           FROM rack_locations rl\n           JOIN warehouses w ON w.id = rl.warehouse_id\n           LEFT JOIN warehouse_zones wz ON wz.id = rl.zone_id\n           WHERE ($1::uuid IS NULL OR rl.warehouse_id = $1)\n             AND ($2::text IS NULL OR rl.rack_code ILIKE '%' || $2 || '%')\n           ORDER BY w.name, rl.rack_code, rl.shelf, rl.bin\n           LIMIT 1000",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "warehouse_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "rack_code",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "shelf",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "bin",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
+        "name": "warehouse_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "zone_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "product_count!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 9,
+        "name": "total_units!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      null,
+      null
+    ]
+  },
+  "hash": "a575e521c5257706308c383f55b1ea4593bb7768d7b026b35a170a93bdbcef9a"
+}

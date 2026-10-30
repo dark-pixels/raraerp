@@ -1,0 +1,59 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT sii.gst_rate,\n                  COUNT(DISTINCT si.id) AS \"invoices!\",\n                  SUM(sii.taxable_value) AS \"taxable!\",\n                  SUM(sii.cgst_amount) AS \"cgst!\", SUM(sii.sgst_amount) AS \"sgst!\", SUM(sii.igst_amount) AS \"igst!\",\n                  SUM(sii.total) AS \"total!\"\n           FROM sales_invoice_items sii JOIN sales_invoices si ON si.id = sii.invoice_id\n           WHERE si.status <> 'cancelled'\n             AND ($1::date IS NULL OR si.invoice_date >= $1) AND ($2::date IS NULL OR si.invoice_date <= $2)\n           GROUP BY sii.gst_rate ORDER BY sii.gst_rate",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "gst_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 1,
+        "name": "invoices!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "taxable!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "cgst!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "sgst!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "igst!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "total!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "e0797f31176dcadd20d29f910d12858fbca9ffd0f7521ddc4cf6bda5855e53f3"
+}

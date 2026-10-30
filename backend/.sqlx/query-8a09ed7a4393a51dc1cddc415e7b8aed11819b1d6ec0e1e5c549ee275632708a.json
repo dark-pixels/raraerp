@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT invoice_number, outstanding_amount FROM sales_invoices WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "invoice_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "8a09ed7a4393a51dc1cddc415e7b8aed11819b1d6ec0e1e5c549ee275632708a"
+}

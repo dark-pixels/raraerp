@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE purchase_orders SET\n               notes = COALESCE($1, notes),\n               supplier_invoice_number = COALESCE($2, supplier_invoice_number),\n               invoice_date = COALESCE($3, invoice_date),\n               updated_at = NOW()\n           WHERE id = $4",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Date",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ace92de5c1bdfadd069ce93fc09fa601ec2913de58d3937787e277e20e02e27d"
+}

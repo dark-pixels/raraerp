@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE payment_reminders SET status = 'cancelled' WHERE reference_type = 'invoice' AND reference_id = $1 AND status NOT IN ('settled','cancelled')",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0a8e05c68922c99f012d4cdad3fab23129ba3379c267395faa9b398f8a6c93b8"
+}

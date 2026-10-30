@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO payment_reminders (reference_type, reference_id, due_date, outstanding_amount, status, reminder_days_before)\n               VALUES ('purchase', $1, $2, $3, 'scheduled', 2)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date",
+        "Numeric"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d9c1676212ca1d629bd95b9892bae254bf84cfb220d78665acde875f73ea715b"
+}

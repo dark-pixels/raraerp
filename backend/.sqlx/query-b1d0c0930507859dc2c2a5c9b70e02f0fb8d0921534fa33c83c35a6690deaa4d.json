@@ -1,0 +1,33 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE products SET\n            sku = COALESCE(UPPER($1), sku),\n            name = COALESCE($2, name),\n            description = COALESCE($3, description),\n            barcode = CASE WHEN $4 THEN NULL ELSE COALESCE($5, barcode) END,\n            category_id = COALESCE($6, category_id),\n            brand_id = COALESCE($7, brand_id),\n            unit_id = COALESCE($8, unit_id),\n            purchase_price = COALESCE($9, purchase_price),\n            retail_price = COALESCE($10, retail_price),\n            wholesale_price = COALESCE($11, wholesale_price),\n            min_selling_price = COALESCE($12, min_selling_price),\n            gst_rate = COALESCE($13, gst_rate),\n            hsn_code = COALESCE($14, hsn_code),\n            reorder_threshold = COALESCE($15, reorder_threshold),\n            reorder_quantity = COALESCE($16, reorder_quantity),\n            status = COALESCE($17, status),\n            image_url = COALESCE($18, image_url),\n            manufacturer = COALESCE($19, manufacturer),\n            updated_at = NOW()\n        WHERE id = $20",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Bool",
+        "Text",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Text",
+        "Int4",
+        "Int4",
+        "Text",
+        "Text",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b1d0c0930507859dc2c2a5c9b70e02f0fb8d0921534fa33c83c35a6690deaa4d"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE customers SET outstanding_balance = GREATEST(outstanding_balance - $1, 0) WHERE id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "37613a17fd9609ecea6bb191e1d2b4dc9b557b168dadc2816138ad97a398b45f"
+}

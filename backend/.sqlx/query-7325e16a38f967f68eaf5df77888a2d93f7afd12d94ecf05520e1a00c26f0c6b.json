@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO payments (payment_date, amount, payment_method, direction, reference_type, reference_id, customer_id,\n               gateway_reference, status, notes)\n           VALUES ($1,$2,'razorpay','inbound','invoice',$3,$4,$5,'verified','Razorpay online payment')",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Numeric",
+        "Uuid",
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7325e16a38f967f68eaf5df77888a2d93f7afd12d94ecf05520e1a00c26f0c6b"
+}

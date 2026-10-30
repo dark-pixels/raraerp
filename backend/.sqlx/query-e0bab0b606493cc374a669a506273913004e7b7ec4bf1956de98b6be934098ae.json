@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE customers SET outstanding_balance = outstanding_balance + $1 WHERE id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e0bab0b606493cc374a669a506273913004e7b7ec4bf1956de98b6be934098ae"
+}

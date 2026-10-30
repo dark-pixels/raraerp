@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO stock_movements (product_id, quantity, source_location_id, movement_type, reference_document, user_id)\n               VALUES ($1, $2, $3, 'sales_dispatch', $4, $5)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Numeric",
+        "Uuid",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5677c87089239c92e9222b6118e2c44037f9d0977183629eacb70922f92fb231"
+}

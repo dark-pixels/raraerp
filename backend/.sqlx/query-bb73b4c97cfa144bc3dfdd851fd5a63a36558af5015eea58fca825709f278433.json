@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE sales_invoices SET amount_paid = amount_paid + $1, outstanding_amount = $2, status = $3, updated_at = NOW() WHERE id = $4",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Numeric",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bb73b4c97cfa144bc3dfdd851fd5a63a36558af5015eea58fca825709f278433"
+}

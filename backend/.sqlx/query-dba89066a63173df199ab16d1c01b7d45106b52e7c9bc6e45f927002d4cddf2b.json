@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT NOT EXISTS(SELECT 1 FROM purchase_order_items WHERE purchase_order_id = $1 AND received_quantity < quantity) AS \"done!\"",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "done!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "dba89066a63173df199ab16d1c01b7d45106b52e7c9bc6e45f927002d4cddf2b"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE payment_reminders pr SET status = 'settled'\n           WHERE pr.status IN ('scheduled', 'notified', 'overdue')\n             AND (\n               (pr.reference_type = 'invoice' AND NOT EXISTS (\n                   SELECT 1 FROM sales_invoices si WHERE si.id = pr.reference_id AND si.outstanding_amount > 0 AND si.status <> 'cancelled'))\n               OR\n               (pr.reference_type = 'purchase' AND NOT EXISTS (\n                   SELECT 1 FROM purchase_orders po WHERE po.id = pr.reference_id AND po.outstanding_amount > 0 AND po.status <> 'cancelled'))\n             )",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "899b61a83788eb63277b50db375b935e1df553f790368502311fbc35ac8d7f4a"
+}

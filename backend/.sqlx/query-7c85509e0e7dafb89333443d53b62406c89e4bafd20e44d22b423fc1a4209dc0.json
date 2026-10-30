@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE purchase_orders SET advance_paid = $1, outstanding_amount = $2, payment_status = $3, updated_at = NOW() WHERE id = $4",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Numeric",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7c85509e0e7dafb89333443d53b62406c89e4bafd20e44d22b423fc1a4209dc0"
+}

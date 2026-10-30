@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT COALESCE(SUM(total), 0) AS \"sum!\" FROM credit_notes WHERE original_invoice_id = $1 AND status <> 'cancelled'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "sum!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "c29ef32ca0d33bb9282618c67e3cc525745c9aee4355db229a8e3e5c34543acd"
+}

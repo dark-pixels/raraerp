@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT COUNT(*) AS \"count!\" FROM login_events\n           WHERE user_id = $1 AND success = false\n             AND created_at > NOW() - make_interval(mins => $2::int)\n             AND created_at > COALESCE(\n                 (SELECT MAX(created_at) FROM login_events WHERE user_id = $1 AND success = true),\n                 '-infinity'::timestamptz)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "50bf5af58bcce44c0404ff445fc03e78054c0be5e7fcddc1050b3569b88faa5a"
+}

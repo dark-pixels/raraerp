@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT pr.id, pr.reference_type, pr.reference_id, pr.due_date,\n                  COALESCE(si.outstanding_amount, po.outstanding_amount, pr.outstanding_amount) AS \"outstanding!\",\n                  COALESCE(si.invoice_number, po.po_number) AS \"document?\",\n                  COALESCE(c.name, s.business_name) AS \"party?\"\n           FROM payment_reminders pr\n           LEFT JOIN sales_invoices si ON pr.reference_type = 'invoice' AND si.id = pr.reference_id\n           LEFT JOIN customers c ON c.id = si.customer_id\n           LEFT JOIN purchase_orders po ON pr.reference_type = 'purchase' AND po.id = pr.reference_id\n           LEFT JOIN suppliers s ON s.id = po.supplier_id\n           WHERE pr.status IN ('scheduled', 'notified', 'overdue')\n             AND pr.due_date IS NOT NULL\n             AND pr.due_date - pr.reminder_days_before <= $1\n             AND (pr.next_reminder_at IS NULL OR pr.next_reminder_at <= NOW())",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "reference_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "reference_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "due_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 4,
+        "name": "outstanding!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "document?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "party?",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "e74b4ec24620f9fe3870c6e50a5379885334864e73c6621b92d24affae6d8032"
+}

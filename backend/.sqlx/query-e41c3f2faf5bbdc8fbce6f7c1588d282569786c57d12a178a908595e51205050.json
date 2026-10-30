@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO gst_verification_records (gstin, status, verified_by)\n               VALUES ($1, 'pending', $2)\n               ON CONFLICT DO NOTHING",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e41c3f2faf5bbdc8fbce6f7c1588d282569786c57d12a178a908595e51205050"
+}

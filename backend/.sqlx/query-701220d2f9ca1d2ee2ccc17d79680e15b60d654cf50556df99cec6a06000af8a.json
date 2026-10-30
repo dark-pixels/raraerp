@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE purchase_orders SET payment_status = 'overdue', updated_at = NOW() WHERE due_date < $1 AND outstanding_amount > 0 AND payment_status IN ('unpaid', 'partially_paid') AND status <> 'cancelled'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "701220d2f9ca1d2ee2ccc17d79680e15b60d654cf50556df99cec6a06000af8a"
+}

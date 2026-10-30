@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT invoice_id FROM payment_gateway_orders WHERE gateway_order_id = $1 AND gateway = 'razorpay' FOR UPDATE",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "invoice_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "79a0c6e40df63ea24a2fa009860dc1564c9f37626a1bc584e3caa3efd3ca2507"
+}

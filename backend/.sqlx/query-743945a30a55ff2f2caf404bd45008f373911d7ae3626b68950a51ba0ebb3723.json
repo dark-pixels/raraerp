@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO company_settings (name, gstin, address, phone, email, logo_url, invoice_prefix, upi_id, upi_name)\n               VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "743945a30a55ff2f2caf404bd45008f373911d7ae3626b68950a51ba0ebb3723"
+}

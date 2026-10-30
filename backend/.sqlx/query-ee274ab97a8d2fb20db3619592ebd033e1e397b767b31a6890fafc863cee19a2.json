@@ -1,0 +1,112 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT p.id, p.payment_date, p.amount, p.payment_method, p.direction, p.status,\n                  p.reference_type, p.reference_id, p.transaction_reference, p.gateway_reference, p.notes, p.created_at,\n                  c.name AS \"customer_name?\", s.business_name AS \"supplier_name?\",\n                  COALESCE(si.invoice_number, po.po_number) AS \"document_number?\"\n           FROM payments p\n           LEFT JOIN customers c ON c.id = p.customer_id\n           LEFT JOIN suppliers s ON s.id = p.supplier_id\n           LEFT JOIN sales_invoices si ON p.reference_type = 'invoice' AND si.id = p.reference_id\n           LEFT JOIN purchase_orders po ON p.reference_type = 'purchase' AND po.id = p.reference_id\n           WHERE ($1::text IS NULL OR p.direction = $1)\n             AND ($2::text IS NULL OR p.payment_method = $2)\n             AND ($3::text IS NULL OR c.name ILIKE '%' || $3 || '%' OR s.business_name ILIKE '%' || $3 || '%'\n                  OR p.transaction_reference ILIKE '%' || $3 || '%'\n                  OR si.invoice_number ILIKE '%' || $3 || '%' OR po.po_number ILIKE '%' || $3 || '%')\n             AND ($4::date IS NULL OR p.payment_date >= $4)\n             AND ($5::date IS NULL OR p.payment_date <= $5)\n           ORDER BY p.payment_date DESC, p.created_at DESC\n           LIMIT $6 OFFSET $7",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "payment_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 2,
+        "name": "amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "payment_method",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "direction",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "reference_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "reference_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 8,
+        "name": "transaction_reference",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "gateway_reference",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "customer_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "supplier_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "document_number?",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Date",
+        "Date",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "ee274ab97a8d2fb20db3619592ebd033e1e397b767b31a6890fafc863cee19a2"
+}

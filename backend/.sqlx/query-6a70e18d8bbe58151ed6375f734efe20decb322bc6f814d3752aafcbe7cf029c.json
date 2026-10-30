@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE company_settings SET name = $1, gstin = $2, address = $3, phone = $4, email = $5,\n                  logo_url = $6, invoice_prefix = $7, upi_id = $8, upi_name = $9, updated_at = NOW()\n           WHERE id = (SELECT id FROM company_settings ORDER BY created_at LIMIT 1)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6a70e18d8bbe58151ed6375f734efe20decb322bc6f814d3752aafcbe7cf029c"
+}

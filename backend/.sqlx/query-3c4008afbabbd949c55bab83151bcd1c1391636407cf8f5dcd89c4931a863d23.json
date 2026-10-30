@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE payment_reminders SET due_date = $1, status = 'scheduled', last_notified_at = NULL\n         WHERE reference_type = $2 AND reference_id = $3 AND status IN ('scheduled', 'notified', 'overdue')",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3c4008afbabbd949c55bab83151bcd1c1391636407cf8f5dcd89c4931a863d23"
+}

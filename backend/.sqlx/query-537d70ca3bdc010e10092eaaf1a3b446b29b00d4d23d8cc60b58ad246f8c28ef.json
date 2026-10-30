@@ -1,0 +1,130 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT si.invoice_number, si.invoice_date, si.due_date, si.subtotal, si.discount_amount,\n                  si.taxable_value, si.cgst_amount, si.sgst_amount, si.igst_amount, si.grand_total,\n                  si.amount_paid, si.outstanding_amount, si.status, si.payment_method, si.notes,\n                  c.name AS \"customer_name?\", c.phone AS \"customer_phone?\", c.gstin AS \"customer_gstin?\",\n                  c.billing_address AS \"billing_address?\"\n           FROM sales_invoices si LEFT JOIN customers c ON c.id = si.customer_id WHERE si.id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "invoice_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "invoice_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 2,
+        "name": "due_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 3,
+        "name": "subtotal",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "discount_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "taxable_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "cgst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "sgst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "igst_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "grand_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "amount_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "outstanding_amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 12,
+        "name": "status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "payment_method",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 15,
+        "name": "customer_name?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "customer_phone?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 17,
+        "name": "customer_gstin?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 18,
+        "name": "billing_address?",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "537d70ca3bdc010e10092eaaf1a3b446b29b00d4d23d8cc60b58ad246f8c28ef"
+}

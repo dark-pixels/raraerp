@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT\n             (SELECT COUNT(*) FROM products WHERE status = 'active') AS \"total_products!\",\n             (SELECT COALESCE(SUM(grand_total), 0) FROM sales_invoices WHERE invoice_date = $1 AND status <> 'cancelled') AS \"today_sales!\",\n             (SELECT COUNT(*) FROM sales_invoices WHERE invoice_date = $1 AND status <> 'cancelled') AS \"today_invoices!\",\n             (SELECT COALESCE(SUM(grand_total), 0) FROM sales_invoices\n                WHERE date_trunc('month', invoice_date) = date_trunc('month', $1::date) AND status <> 'cancelled') AS \"monthly_sales!\",\n             (SELECT COALESCE(SUM(grand_total), 0) FROM sales_invoices\n                WHERE date_trunc('month', invoice_date) = date_trunc('month', $1::date - INTERVAL '1 month') AND status <> 'cancelled') AS \"last_month_sales!\",\n             (SELECT COALESCE(SUM(outstanding_amount), 0) FROM sales_invoices WHERE outstanding_amount > 0 AND status <> 'cancelled') AS \"receivables!\",\n             (SELECT COALESCE(SUM(outstanding_amount), 0) FROM purchase_orders WHERE outstanding_amount > 0 AND status <> 'cancelled') AS \"payables!\",\n             (SELECT COUNT(*) FROM (\n                 SELECT p.id FROM products p\n                 LEFT JOIN inventory_balances ib ON ib.product_id = p.id\n                 WHERE p.status = 'active'\n                 GROUP BY p.id, p.reorder_threshold\n                 HAVING COALESCE(SUM(ib.available), 0) < p.reorder_threshold) low) AS \"low_stock!\",\n             (SELECT COUNT(*) FROM sales_invoices WHERE due_date < $1 AND outstanding_amount > 0 AND status <> 'cancelled') AS \"overdue_invoices!\",\n             (SELECT COUNT(*) FROM purchase_orders WHERE due_date < $1 AND outstanding_amount > 0 AND status <> 'cancelled') AS \"overdue_purchases!\",\n             (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE payment_date = $1 AND direction = 'inbound' AND status = 'verified') AS \"today_collected!\",\n             (SELECT COALESCE(SUM(ib.on_hand * p.purchase_price), 0) FROM inventory_balances ib JOIN products p ON p.id = ib.product_id) AS \"stock_value!\",\n             (SELECT COUNT(*) FROM purchase_orders WHERE status IN ('approved','ordered','partially_received')) AS \"pending_receipts!\",\n             (SELECT COUNT(*) FROM expenses WHERE approval_status = 'pending') AS \"pending_expenses!\"",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "total_products!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "today_sales!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 2,
+        "name": "today_invoices!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "monthly_sales!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "last_month_sales!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "receivables!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "payables!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "low_stock!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 8,
+        "name": "overdue_invoices!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 9,
+        "name": "overdue_purchases!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "today_collected!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "stock_value!",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 12,
+        "name": "pending_receipts!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 13,
+        "name": "pending_expenses!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "efcc276d6acaac2002552959c10dd706ccf3d771d00bc3fe8f1c67fdb2d4e32a"
+}

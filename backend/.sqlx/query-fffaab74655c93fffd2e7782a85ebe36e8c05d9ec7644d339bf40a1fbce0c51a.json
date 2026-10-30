@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE inventory_imports SET status = 'failed', completed_at = NOW() WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fffaab74655c93fffd2e7782a85ebe36e8c05d9ec7644d339bf40a1fbce0c51a"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE purchase_orders SET due_date = $1, updated_at = NOW()\n                 WHERE id = $2 AND outstanding_amount > 0 AND status <> 'cancelled' AND $1 >= purchase_date",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "220c06187ec19655379ba9c5e0832d392ae6b61d92d44cf0aa591f169b337359"
+}
