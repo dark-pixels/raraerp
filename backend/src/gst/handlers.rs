@@ -9,20 +9,17 @@ pub async fn verify_gstin(
 ) -> AppResult<Json<serde_json::Value>> {
     require_permission(&user, "gst.verify")?;
 
-    let gstin = body.get("gstin").and_then(|v| v.as_str())
-        .ok_or_else(|| AppError::Validation("gstin required".into()))?;
+    let gstin_owned = crate::common::normalize_gstin(body.get("gstin"))?
+        .ok_or_else(|| AppError::Validation("Enter a GSTIN to verify".into()))?;
+    let gstin = gstin_owned.as_str();
 
-    // Validate GSTIN format (15 chars, starts with 2-digit state code)
-    if gstin.len() != 15 {
-        return Err(AppError::Validation("GSTIN must be exactly 15 characters".into()));
-    }
-
-    // Check cache (1 hour)
+    // Reuse a successful lookup from the last 24 hours
     let cached = sqlx::query!(
         r#"SELECT id, status, legal_name, trade_name, registration_type, state_jurisdiction,
                   registration_date, verified_at
            FROM gst_verification_records
-           WHERE gstin = $1 AND verified_at > NOW() - INTERVAL '1 hour'
+           WHERE gstin = $1 AND status NOT IN ('pending', 'unknown')
+             AND verified_at > NOW() - INTERVAL '24 hours'
            ORDER BY verified_at DESC LIMIT 1"#,
         gstin
     ).fetch_optional(&state.pool).await?;
@@ -42,8 +39,8 @@ pub async fn verify_gstin(
     }
 
     // Call external GST API
-    let api_base = std::env::var("GST_API_BASE_URL").unwrap_or_default();
-    let api_key = std::env::var("GST_API_KEY").unwrap_or_default();
+    let api_base = state.config.gst_api_base_url.trim_end_matches('/').to_string();
+    let api_key = state.config.gst_api_key.clone();
 
     if api_base.is_empty() || api_key.is_empty() {
         // Store as pending and return

@@ -15,6 +15,8 @@
 	};
 
 	const formatNum = (val: unknown) => Number(val ?? 0).toLocaleString('en-IN');
+	const formatDay = (d: unknown) =>
+		d ? new Date(String(d)).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '';
 
 	onMount(async () => {
 		try {
@@ -33,6 +35,13 @@
 			loading = false;
 		}
 	});
+
+	const ACTIVITY_LABELS: Record<string, string> = {
+		invoice: 'Sale',
+		purchase: 'Purchase order',
+		payment_inbound: 'Payment received',
+		payment_outbound: 'Payment made'
+	};
 
 	const STAT_CARDS = [
 		{ label: 'Today Sales', key: 'today_sales', format: 'currency', color: '#16a34a', bg: '#dcfce7', icon: 'trending-up' },
@@ -60,22 +69,7 @@
 				{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
 			</p>
 		</div>
-		<div class="flex gap-2">
-			<select class="form-control w-auto">
-				<option>Today</option>
-				<option>Last 7 days</option>
-				<option>This month</option>
-				<option>Last month</option>
-				<option>Custom range</option>
-			</select>
-			<button class="btn btn-primary">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<polyline points="6 9 12 3 18 9"/><line x1="12" y1="3" x2="12" y2="15"/>
-					<path d="M5 20h14a1 1 0 001-1v-3"/>
-				</svg>
-				Export
-			</button>
-		</div>
+		<a href="/pos" class="btn btn-primary">+ New sale</a>
 	</div>
 
 	{#if loading}
@@ -145,17 +139,18 @@
 						<div class="flex items-end gap-1 h-40 px-2">
 							{#each trend as item}
 								{@const height = Math.max((parseFloat(item.total) / maxVal) * 100, 2)}
-								<div class="flex-1 flex flex-col items-center gap-1 group" title="{item.date}: {formatINR(item.total)}">
+								<div class="flex-1 h-full flex flex-col justify-end group" title="{formatDay(item.date)}: {formatINR(item.total)}">
 									<div
 										class="w-full rounded-t-sm transition-all duration-200 group-hover:opacity-80 cursor-pointer"
-										style="height: {height}%; background: linear-gradient(to top, #eab308, #facc15);"
+										style="height: {height}%; background: {parseFloat(item.total) > 0 ? 'linear-gradient(to top, #eab308, #facc15)' : '#e2e8f0'};"
 									></div>
 								</div>
 							{/each}
 						</div>
 						<div class="flex justify-between text-xs text-slate-400 mt-2 px-2">
-							<span>{trend[0]?.date ?? ''}</span>
-							<span>{trend[trend.length - 1]?.date ?? ''}</span>
+							<span>{formatDay(trend[0]?.date)}</span>
+							<span>Total: {formatINR(trend.reduce((s, t) => s + (parseFloat(t.total) || 0), 0))}</span>
+							<span>{formatDay(trend[trend.length - 1]?.date)}</span>
 						</div>
 					{/if}
 				</div>
@@ -175,10 +170,10 @@
 					{:else}
 						<div class="divide-y divide-slate-50">
 							{#each activity.slice(0, 8) as item}
-								{@const a = item as {type: string; reference: string; amount: string; timestamp: string}}
+								{@const a = item as {type: string; reference: string; amount: string; timestamp: string; party?: string}}
 								<div class="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors">
 									<div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
-										{a.type === 'invoice' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}">
+										{a.type === 'invoice' || a.type === 'payment_inbound' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}">
 										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											{#if a.type === 'invoice'}
 												<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
@@ -189,7 +184,7 @@
 									</div>
 									<div class="flex-1 min-w-0">
 										<p class="text-sm font-medium text-slate-800 truncate">{a.reference}</p>
-										<p class="text-xs text-slate-400">{a.type === 'invoice' ? 'Invoice' : 'Purchase'}</p>
+										<p class="text-xs text-slate-400">{ACTIVITY_LABELS[a.type] ?? a.type}{a.party ? ` · ${a.party}` : ''}</p>
 									</div>
 									<div class="text-sm font-semibold text-slate-700">{formatINR(a.amount)}</div>
 								</div>

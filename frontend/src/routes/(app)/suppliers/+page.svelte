@@ -121,7 +121,7 @@
 </div>
 
 {#if showModal}
-<div class="modal-overlay" on:click|self={() => { showModal = false; }}>
+<div class="modal-overlay" role="presentation" on:click|self={() => { showModal = false; }}>
 	<div class="modal" style="max-width:600px;">
 		<div class="modal-header">
 			<h2 class="modal-title">{editId ? 'Edit Supplier' : 'Add Supplier'}</h2>
@@ -131,40 +131,40 @@
 			<div class="modal-body">
 				<div class="grid grid-cols-2 gap-4">
 					<div class="form-group col-span-2">
-						<label class="form-label">Business Name *</label>
-						<input class="input" bind:value={form.business_name} required />
+						<label class="form-label" for="suppliers-f1">Business Name *</label>
+						<input id="suppliers-f1" class="input" bind:value={form.business_name} required />
 					</div>
 					<div class="form-group">
-						<label class="form-label">Contact Person</label>
-						<input class="input" bind:value={form.contact_person} />
+						<label class="form-label" for="suppliers-f2">Contact Person</label>
+						<input id="suppliers-f2" class="input" bind:value={form.contact_person} />
 					</div>
 					<div class="form-group">
-						<label class="form-label">Phone *</label>
-						<input class="input" bind:value={form.phone} required />
+						<label class="form-label" for="suppliers-f3">Phone *</label>
+						<input id="suppliers-f3" class="input" bind:value={form.phone} required />
 					</div>
 					<div class="form-group">
-						<label class="form-label">Email</label>
-						<input class="input" type="email" bind:value={form.email} />
+						<label class="form-label" for="suppliers-f4">Email</label>
+						<input id="suppliers-f4" class="input" type="email" bind:value={form.email} />
 					</div>
 					<div class="form-group">
-						<label class="form-label">GSTIN</label>
-						<input class="input" bind:value={form.gstin} maxlength="15" />
+						<label class="form-label" for="suppliers-f5">GSTIN</label>
+						<input id="suppliers-f5" class="input" bind:value={form.gstin} maxlength="15" />
 					</div>
 					<div class="form-group">
-						<label class="form-label">Payment Terms (days)</label>
-						<input class="input" type="number" bind:value={form.payment_terms_days} min="0" />
+						<label class="form-label" for="suppliers-f6">Payment Terms (days)</label>
+						<input id="suppliers-f6" class="input" type="number" bind:value={form.payment_terms_days} min="0" />
 					</div>
 					<div class="form-group">
-						<label class="form-label">Credit Limit (₹)</label>
-						<input class="input" type="number" bind:value={form.credit_limit} min="0" />
+						<label class="form-label" for="suppliers-f7">Credit Limit (₹)</label>
+						<input id="suppliers-f7" class="input" type="number" bind:value={form.credit_limit} min="0" />
 					</div>
 					<div class="form-group col-span-2">
-						<label class="form-label">Address</label>
-						<textarea class="input" rows="2" bind:value={form.address}></textarea>
+						<label class="form-label" for="suppliers-f8">Address</label>
+						<textarea id="suppliers-f8" class="input" rows="2" bind:value={form.address}></textarea>
 					</div>
 					<div class="form-group col-span-2">
-						<label class="form-label">Notes</label>
-						<textarea class="input" rows="2" bind:value={form.notes}></textarea>
+						<label class="form-label" for="suppliers-f9">Notes</label>
+						<textarea id="suppliers-f9" class="input" rows="2" bind:value={form.notes}></textarea>
 					</div>
 				</div>
 			</div>

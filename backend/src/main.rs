@@ -3,13 +3,14 @@ use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 mod config;
+mod common;
 mod database;
 mod errors;
 mod middleware;
 mod routes;
 mod auth;
 mod users;
-mod permissions;
+mod settings;
 mod inventory;
 mod racks;
 mod stock_movements;
@@ -32,57 +33,42 @@ use database::create_pool;
 
 #[tokio::main]
 async fn main() {
-    // Load environment
     dotenvy::dotenv().ok();
 
-    // Initialize tracing
     tracing_subscriber::registry()
-        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| "rara_erp_backend=debug,tower_http=debug".into()))
+        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| "rara_erp_backend=info,tower_http=info".into()))
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    info!("Starting RARA Enterprise ERP Backend");
+    info!("Starting RARA Enterprise ERP Backend v{}", env!("CARGO_PKG_VERSION"));
 
-    // Load configuration safely
-    let config = AppConfig::from_env().unwrap_or_else(|err| {
-        eprintln!("Configuration warning: {}", err);
-        AppConfig::default()
-    });
+    let config = AppConfig::from_env();
+    auth::service::init(config.jwt_secret.clone());
     info!(port = config.port, env = %config.app_env, "Configuration loaded");
 
-    // Create database pool (lazy, non-blocking)
+    // Lazy pool: the server starts listening immediately even if the database is slow to accept connections.
     let pool = match create_pool(&config.database_url, config.db_max_connections) {
         Ok(p) => p,
         Err(e) => {
-            eprintln!("Database pool init warning: {}", e);
-            create_pool("postgres://localhost:5432/placeholder", 1).expect("Failed to initialize fallback pool")
+            eprintln!("FATAL: invalid DATABASE_URL: {}", e);
+            std::process::exit(1);
         }
     };
-    info!("Database pool initialized");
 
-    // Run migrations in background so server starts listening instantly
-    if !config.database_url.is_empty() && !config.database_url.contains("placeholder") {
+    // Run migrations in the background so the readiness probe passes quickly.
+    if !config.database_url.is_empty() {
         let migration_pool = pool.clone();
         tokio::spawn(async move {
             match sqlx::migrate!("./migrations").run(&migration_pool).await {
                 Ok(_) => info!("Database migrations applied"),
-                Err(e) => tracing::warn!("Database migrations notice (already applied or skipped): {}", e),
+                Err(e) => tracing::error!("Database migration failed: {}", e),
             }
         });
     }
 
-    // Build application router
-    let app = routes::create_router(pool.clone(), config.clone()).await;
-    info!("Router configured");
+    let app = routes::create_router(pool, config.clone());
 
-    // Bind address
-    let port = config.port;
-    let addr: SocketAddr = format!("0.0.0.0:{}", port)
-        .parse()
-        .expect("Invalid bind address");
-
-    info!(addr = %addr, "Listening");
-
+    let addr = SocketAddr::from(([0, 0, 0, 0], config.port));
     let listener = match tokio::net::TcpListener::bind(addr).await {
         Ok(l) => l,
         Err(e) => {
@@ -90,11 +76,15 @@ async fn main() {
             std::process::exit(1);
         }
     };
+    info!(addr = %addr, "Listening");
 
-    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
+    if let Err(e) = axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
         .with_graceful_shutdown(shutdown_signal())
         .await
-        .expect("Server error");
+    {
+        eprintln!("Server error: {}", e);
+        std::process::exit(1);
+    }
 
     info!("Server shut down gracefully");
 }
@@ -102,15 +92,17 @@ async fn main() {
 async fn shutdown_signal() {
     use tokio::signal;
     let ctrl_c = async {
-        signal::ctrl_c().await.expect("Failed to install Ctrl+C handler");
+        let _ = signal::ctrl_c().await;
     };
 
     #[cfg(unix)]
     let terminate = async {
-        signal::unix::signal(signal::unix::SignalKind::terminate())
-            .expect("Failed to install signal handler")
-            .recv()
-            .await;
+        match signal::unix::signal(signal::unix::SignalKind::terminate()) {
+            Ok(mut s) => {
+                s.recv().await;
+            }
+            Err(_) => std::future::pending::<()>().await,
+        }
     };
 
     #[cfg(not(unix))]

@@ -123,7 +123,7 @@
 </div>
 
 {#if showModal}
-<div class="modal-overlay" on:click|self={() => { showModal = false; }}>
+<div class="modal-overlay" role="presentation" on:click|self={() => { showModal = false; }}>
 	<div class="modal" style="max-width:600px;">
 		<div class="modal-header">
 			<h2 class="modal-title">{editId ? 'Edit Customer' : 'Add Customer'}</h2>
@@ -132,20 +132,20 @@
 		<form on:submit|preventDefault={submit}>
 			<div class="modal-body">
 				<div class="grid grid-cols-2 gap-4">
-					<div class="form-group"><label class="form-label">Full Name *</label><input class="input" bind:value={form.name} required /></div>
-					<div class="form-group"><label class="form-label">Business Name</label><input class="input" bind:value={form.business_name} /></div>
-					<div class="form-group"><label class="form-label">Phone *</label><input class="input" bind:value={form.phone} required /></div>
-					<div class="form-group"><label class="form-label">Email</label><input class="input" type="email" bind:value={form.email} /></div>
-					<div class="form-group"><label class="form-label">Customer Type</label>
-						<select class="input" bind:value={form.customer_type}>
+					<div class="form-group"><label class="form-label" for="customers-f1">Full Name *</label><input id="customers-f1" class="input" bind:value={form.name} required /></div>
+					<div class="form-group"><label class="form-label" for="customers-f2">Business Name</label><input id="customers-f2" class="input" bind:value={form.business_name} /></div>
+					<div class="form-group"><label class="form-label" for="customers-f3">Phone *</label><input id="customers-f3" class="input" bind:value={form.phone} required /></div>
+					<div class="form-group"><label class="form-label" for="customers-f4">Email</label><input id="customers-f4" class="input" type="email" bind:value={form.email} /></div>
+					<div class="form-group"><label class="form-label" for="customers-f5">Customer Type</label>
+						<select id="customers-f5" class="input" bind:value={form.customer_type}>
 							<option value="retail">Retail</option><option value="wholesale">Wholesale</option>
 						</select>
 					</div>
-					<div class="form-group"><label class="form-label">GSTIN</label><input class="input" bind:value={form.gstin} maxlength="15" /></div>
-					<div class="form-group"><label class="form-label">Credit Limit (₹)</label><input class="input" type="number" bind:value={form.credit_limit} min="0" /></div>
-					<div class="form-group"><label class="form-label">Credit Period (days)</label><input class="input" type="number" bind:value={form.credit_period_days} min="0" /></div>
-					<div class="form-group col-span-2"><label class="form-label">Billing Address</label><textarea class="input" rows="2" bind:value={form.billing_address}></textarea></div>
-					<div class="form-group col-span-2"><label class="form-label">Notes</label><textarea class="input" rows="2" bind:value={form.notes}></textarea></div>
+					<div class="form-group"><label class="form-label" for="customers-f6">GSTIN</label><input id="customers-f6" class="input" bind:value={form.gstin} maxlength="15" /></div>
+					<div class="form-group"><label class="form-label" for="customers-f7">Credit Limit (₹)</label><input id="customers-f7" class="input" type="number" bind:value={form.credit_limit} min="0" /></div>
+					<div class="form-group"><label class="form-label" for="customers-f8">Credit Period (days)</label><input id="customers-f8" class="input" type="number" bind:value={form.credit_period_days} min="0" /></div>
+					<div class="form-group col-span-2"><label class="form-label" for="customers-f9">Billing Address</label><textarea id="customers-f9" class="input" rows="2" bind:value={form.billing_address}></textarea></div>
+					<div class="form-group col-span-2"><label class="form-label" for="customers-f10">Notes</label><textarea id="customers-f10" class="input" rows="2" bind:value={form.notes}></textarea></div>
 				</div>
 			</div>
 			<div class="modal-footer">

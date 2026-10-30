@@ -56,7 +56,14 @@ pub struct RefreshRequest {
 #[derive(Debug, Serialize)]
 pub struct RefreshResponse {
     pub access_token: String,
+    pub refresh_token: String,
     pub expires_in: u64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ChangePasswordRequest {
+    pub current_password: String,
+    pub new_password: String,
 }
 
 impl From<&AuthenticatedUser> for UserInfo {

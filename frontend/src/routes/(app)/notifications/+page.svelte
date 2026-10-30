@@ -12,7 +12,7 @@
 	async function load() {
 		loading = true;
 		try {
-			const res: any = await notificationApi.list({ limit: 50 });
+			const res: any = await notificationApi.list();
 			notifications = res.data ?? res ?? [];
 			unreadCount = res.unread_count ?? notifications.filter((n) => !n.is_read).length;
 		} catch { toasts.error('Failed to load notifications'); }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { authApi } from '$api/client';
+	import { api, authApi } from '$api/client';
 	import { authStore } from '$stores/auth';
 	import { toasts } from '$stores/toasts';
 	import { z } from 'zod';
@@ -30,7 +30,7 @@
 		loading = true;
 		try {
 			const res = await authApi.login({ email, password });
-			import('$api/client').then(({ api }) => api.setTokens(res.access_token, res.refresh_token));
+			api.setTokens(res.access_token, res.refresh_token);
 			authStore.setUser(res.user);
 			toasts.success('Welcome back!', `Logged in as ${res.user.full_name}`);
 			goto('/dashboard');

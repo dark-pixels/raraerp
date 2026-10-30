@@ -24,7 +24,7 @@
 
 	async function loadHistory() {
 		try {
-			const res: any = await gstApi.history({ limit: 20 });
+			const res: any = await gstApi.history();
 			history = res.data ?? res ?? [];
 		} catch {}
 		loadingHistory = false;
@@ -49,8 +49,8 @@
 				<div class="card-body">
 					<h2 class="text-lg font-semibold text-slate-700 mb-4">Verify GSTIN</h2>
 					<div class="form-group">
-						<label class="form-label">GSTIN (15 characters)</label>
-						<input class="input" bind:value={gstin} placeholder="e.g. 27AAAPL1234C1ZV" maxlength="15"
+						<label class="form-label" for="gst-verification-f1">GSTIN (15 characters)</label>
+						<input id="gst-verification-f1" class="input" bind:value={gstin} placeholder="e.g. 27AAAPL1234C1ZV" maxlength="15"
 							style="font-family: monospace; text-transform: uppercase;"
 							on:input={() => gstin = gstin.toUpperCase()} />
 					</div>
@@ -64,9 +64,10 @@
 				<div class="card">
 					<div class="card-body">
 						<div class="flex items-center gap-2 mb-4">
-							<span class="badge badge-{result.status === 'valid' ? 'success' : 'danger'} text-sm px-3 py-1">
-								{result.status === 'valid' ? '✓ Valid' : '✗ Invalid'}
+							<span class="badge badge-{result.status === 'active' ? 'success' : result.status === 'unknown' || result.status === 'pending' ? 'warning' : 'danger'} text-sm px-3 py-1">
+								{result.status === 'active' ? '✓ Active' : result.status === 'unknown' || result.status === 'pending' ? 'Not verified' : `✗ ${String(result.status)}`}
 							</span>
+							{#if result.message}<span class="text-sm text-slate-500">{result.message}</span>{/if}
 						</div>
 						{#if result.trade_name || result.legal_name}
 							<div class="mb-2"><span class="text-sm text-slate-500">Business:</span>
@@ -97,7 +98,7 @@
 					{#each history as h}
 						<tr>
 							<td class="font-mono text-sm">{h.gstin}</td>
-							<td><span class="badge badge-{h.status === 'valid' ? 'success' : 'danger'}">{h.status}</span></td>
+							<td><span class="badge badge-{h.status === 'active' ? 'success' : 'danger'}">{h.status}</span></td>
 							<td class="text-sm text-slate-500">{formatDate(h.verified_at ?? h.created_at)}</td>
 						</tr>
 					{/each}

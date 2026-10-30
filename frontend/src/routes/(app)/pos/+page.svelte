@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { inventoryApi, invoiceApi, customerApi } from '$api/client';
+	import { inventoryApi, invoiceApi, customerApi, errorMessage } from '$api/client';
 	import { toasts } from '$stores/toasts';
 
 	// Cart state
@@ -24,7 +24,7 @@
 
 	// Payment
 	let paymentMethod: 'cash' | 'upi' | 'bank_transfer' | 'razorpay' | 'cheque' = 'cash';
-	let amountPaid = '';
+	let amountPaid: string | number | null = '';
 	let notes = '';
 	let submitting = false;
 
@@ -41,8 +41,8 @@
 	}, 0);
 
 	$: grandTotal = subtotal + totalGst;
-	$: outstanding = grandTotal - (parseFloat(amountPaid) || 0);
-	$: change = Math.max(0, (parseFloat(amountPaid) || 0) - grandTotal);
+	$: outstanding = grandTotal - (parseFloat(String(amountPaid ?? '')) || 0);
+	$: change = Math.max(0, (parseFloat(String(amountPaid ?? '')) || 0) - grandTotal);
 
 	const formatINR = (v: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(v);
 
@@ -99,8 +99,29 @@
 		} catch { customers = []; }
 	}
 
+	// Barcode scanners type the code and press Enter: add an exact match straight to the cart.
+	async function onSearchKeydown(e: KeyboardEvent) {
+		if (e.key !== 'Enter' || !productSearch.trim()) return;
+		e.preventDefault();
+		clearTimeout(searchDebounce);
+		const code = productSearch.trim();
+		try {
+			const res = await inventoryApi.products.list({ search: code, per_page: 10, status: 'active' }) as { data: Record<string, unknown>[] };
+			const rows = res.data ?? [];
+			const exact = rows.find(p => String(p.barcode ?? '') === code || String(p.sku ?? '').toUpperCase() === code.toUpperCase());
+			if (exact || rows.length === 1) addToCart(exact ?? rows[0]);
+			else searchResults = rows;
+		} catch { /* keep current results */ }
+	}
+
+	let lastInvoice: { id: string; invoice_number: string; change_due: number } | null = null;
+
 	async function createInvoice() {
 		if (cartItems.length === 0) { toasts.warning('Cart is empty'); return; }
+		// Walk-in sales must be settled in full; customers can buy on credit.
+		const paid = amountPaid === '' || amountPaid === null
+			? (selectedCustomer ? '0' : grandTotal.toFixed(2))
+			: String(amountPaid);
 		submitting = true;
 		try {
 			const payload = {
@@ -111,23 +132,28 @@
 					unit_price: String(i.unit_price),
 					discount_percent: String(i.discount_percent)
 				})),
-				amount_paid: amountPaid || '0',
+				amount_paid: paid,
 				payment_method: paymentMethod,
 				notes
 			};
-			const res = await invoiceApi.create(payload) as { invoice_number: string; id: string; grand_total: string; outstanding_amount: string };
-			toasts.success(`Invoice ${res.invoice_number} created!`, `Total: ${formatINR(Number(res.grand_total))}`);
-			// Reset
+			const res = await invoiceApi.create(payload) as { invoice_number: string; id: string; grand_total: string; outstanding_amount: string; change_due: string };
+			lastInvoice = { id: res.id, invoice_number: res.invoice_number, change_due: Number(res.change_due ?? 0) };
+			toasts.success(`Invoice ${res.invoice_number} created`, `Total: ${formatINR(Number(res.grand_total))}`);
 			cartItems = [];
 			selectedCustomer = null;
 			amountPaid = '';
 			notes = '';
 		} catch (e: unknown) {
-			const err = e as { message?: string };
-			toasts.error('Failed to create invoice', err.message);
+			toasts.error('Failed to create invoice', errorMessage(e));
 		} finally {
 			submitting = false;
 		}
+	}
+
+	async function printLast() {
+		if (!lastInvoice) return;
+		try { await invoiceApi.openPdf(lastInvoice.id, lastInvoice.invoice_number); }
+		catch (e) { toasts.error('Could not open invoice', errorMessage(e)); }
 	}
 </script>
 
@@ -158,9 +184,11 @@
 				<input
 					type="text"
 					class="form-control pl-12 py-4 text-base"
-					placeholder="Search products by name or SKU (type at least 2 characters)…"
+					placeholder="Scan barcode or search by name / SKU…"
+					aria-label="Search products"
 					bind:value={productSearch}
 					on:input={onSearchInput}
+					on:keydown={onSearchKeydown}
 					autocomplete="off"
 				/>
 				{#if searchLoading}
@@ -375,9 +403,12 @@
 					type="number"
 					step="0.01"
 					class="form-control font-mono text-right"
-					placeholder="0.00"
+					placeholder={selectedCustomer ? '0.00 (credit sale)' : grandTotal.toFixed(2)}
 					bind:value={amountPaid}
 				/>
+				{#if !selectedCustomer}
+					<p class="text-xs text-slate-400 mt-1">Leave blank for full payment. Select a customer to sell on credit.</p>
+				{/if}
 				{#if change > 0.01}
 					<p class="text-xs text-green-700 font-medium mt-1">Change: {formatINR(change)}</p>
 				{:else if outstanding > 0.01 && amountPaid}
@@ -391,6 +422,19 @@
 				<textarea id="pos-notes" class="form-control text-sm" rows="2" placeholder="Optional notes…" bind:value={notes}></textarea>
 			</div>
 		</div>
+
+		{#if lastInvoice}
+			<div class="card card-body flex items-center justify-between gap-3" style="padding:0.875rem 1rem">
+				<div class="text-sm">
+					<div class="font-semibold text-slate-800">{lastInvoice.invoice_number} saved</div>
+					{#if lastInvoice.change_due > 0}<div class="text-green-700 font-medium">Return change: {formatINR(lastInvoice.change_due)}</div>{/if}
+				</div>
+				<div class="flex gap-2">
+					<button class="btn btn-secondary btn-sm" on:click={printLast}>Print</button>
+					<button class="btn btn-ghost btn-sm" on:click={() => (lastInvoice = null)} aria-label="Dismiss">×</button>
+				</div>
+			</div>
+		{/if}
 
 		<!-- Create invoice button -->
 		<button

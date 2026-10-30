@@ -1,7 +1,44 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { inventoryApi } from '$api/client';
+	import { inventoryApi, rackApi, errorMessage } from '$api/client';
 	import { toasts } from '$stores/toasts';
+	import { currentUser, hasPermission } from '$stores/auth';
+
+	// Receive stock for an existing product
+	let stockFor: Record<string, unknown> | null = null;
+	let stockRacks: Record<string, unknown>[] = [];
+	let stockForm = { quantity: '', location_id: '', reason: 'Stock received' };
+	let savingStock = false;
+	$: canAdjustStock = hasPermission($currentUser, 'inventory.adjust');
+
+	async function openAddStock(p: Record<string, unknown>) {
+		stockFor = p;
+		stockForm = { quantity: '', location_id: '', reason: 'Stock received' };
+		if (!stockRacks.length) {
+			try { stockRacks = ((await rackApi.racks()) as { data: Record<string, unknown>[] }).data ?? []; } catch { stockRacks = []; }
+		}
+	}
+
+	async function saveAddStock() {
+		if (!stockFor) return;
+		if (!(Number(stockForm.quantity) > 0)) { toasts.warning('Enter a quantity greater than zero'); return; }
+		savingStock = true;
+		try {
+			await inventoryApi.adjust({
+				product_id: stockFor.id,
+				location_id: stockForm.location_id || undefined,
+				quantity: stockForm.quantity,
+				reason: stockForm.reason || 'Stock received',
+				type: 'received'
+			});
+			toasts.success(`Added ${stockForm.quantity} to ${stockFor.name}`);
+			stockFor = null;
+			await loadProducts();
+		} catch (e) {
+			toasts.error('Could not add stock', errorMessage(e));
+		}
+		savingStock = false;
+	}
 
 	let products: Record<string, unknown>[] = [];
 	let categories: Record<string, unknown>[] = [];
@@ -28,8 +65,10 @@
 		category_id: '', brand_id: '',
 		unit_id: '', hsn_code: '',
 		purchase_price: '', retail_price: '', wholesale_price: '',
-		gst_rate: '18', reorder_threshold: '10', reorder_quantity: '50'
+		gst_rate: '18', reorder_threshold: '10', reorder_quantity: '50',
+		barcode: '', opening_stock: ''
 	};
+	const isBlank = (v: unknown) => v === '' || v === null || v === undefined;
 
 	const formatINR = (v: unknown) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(Number(v ?? 0));
 
@@ -121,9 +160,9 @@
 		if (!newProduct.name.trim()) { toasts.error('Product name is required'); return; }
 		if (!newProduct.category_id) { toasts.error('Category is required'); return; }
 		if (!newProduct.unit_id) { toasts.error('Unit of measure is required'); return; }
-		if (!newProduct.purchase_price) { toasts.error('Purchase price is required'); return; }
-		if (!newProduct.retail_price) { toasts.error('Retail price is required'); return; }
-		if (!newProduct.wholesale_price) { toasts.error('Wholesale price is required'); return; }
+		if (isBlank(newProduct.purchase_price)) { toasts.error('Purchase price is required'); return; }
+		if (isBlank(newProduct.retail_price)) { toasts.error('Retail price is required'); return; }
+		if (isBlank(newProduct.wholesale_price)) { toasts.error('Wholesale price is required'); return; }
 
 		submitting = true;
 		try {
@@ -138,6 +177,8 @@
 				gst_rate: Number(newProduct.gst_rate),
 				reorder_threshold: Number(newProduct.reorder_threshold) || 10,
 				reorder_quantity: Number(newProduct.reorder_quantity) || 50,
+				barcode: String(newProduct.barcode ?? '').trim() || null,
+				opening_stock: isBlank(newProduct.opening_stock) ? undefined : Number(newProduct.opening_stock),
 			};
 			await inventoryApi.products.create(payload);
 			toasts.success('Product created successfully');
@@ -146,6 +187,7 @@
 			newProduct.category_id = ''; newProduct.brand_id = ''; newProduct.unit_id = '';
 			newProduct.hsn_code = ''; newProduct.purchase_price = ''; newProduct.retail_price = '';
 			newProduct.wholesale_price = ''; newProduct.gst_rate = '18';
+			newProduct.barcode = ''; newProduct.opening_stock = '';
 			loadProducts();
 		} catch (e: unknown) {
 			const err = e as { message?: string };
@@ -304,10 +346,13 @@
 								</td>
 								<td class="text-right">
 									<div class="flex items-center justify-end gap-1">
+										{#if canAdjustStock}
+											<button class="btn btn-sm btn-secondary" title="Add stock received" on:click={() => openAddStock(product)}>+ Stock</button>
+										{/if}
 										<a href="/inventory/products/{product.id}" class="btn btn-sm btn-ghost" title="View">
 											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
 										</a>
-										<a href="/inventory/products/{product.id}/edit" class="btn btn-sm btn-ghost" title="Edit">
+										<a href="/inventory/products/{product.id}?edit=1" class="btn btn-sm btn-ghost" title="Edit">
 											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 										</a>
 									</div>
@@ -352,7 +397,7 @@
 		class="modal-overlay"
 		on:click|self={() => showAddModal = false}
 		on:keydown={(e) => e.key === 'Escape' && (showAddModal = false)}
-		role="dialog"
+		role="dialog" tabindex="-1"
 		aria-label="Add Product"
 		aria-modal="true"
 	>
@@ -439,6 +484,18 @@
 								{/each}
 							</select>
 						</div>
+						<div class="form-group">
+							<label class="form-label" for="prod-barcode">Barcode</label>
+							<input id="prod-barcode" type="text" class="form-control font-mono" bind:value={newProduct.barcode} placeholder="Scan or type" />
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="prod-reorder">Reorder level</label>
+							<input id="prod-reorder" type="number" min="0" class="form-control" bind:value={newProduct.reorder_threshold} />
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="prod-opening">Opening stock</label>
+							<input id="prod-opening" type="number" min="0" step="any" class="form-control" bind:value={newProduct.opening_stock} placeholder="0" />
+						</div>
 					</div>
 
 					<div class="modal-footer">
@@ -459,13 +516,14 @@
 
 <!-- Quick-Create Category Modal -->
 {#if showCatModal}
-<div class="modal-overlay" on:click|self={() => showCatModal = false} role="dialog" aria-modal="true">
+<div class="modal-overlay" on:click|self={() => showCatModal = false} on:keydown={(e) => e.key === 'Escape' && (showCatModal = false)} role="dialog" tabindex="-1" aria-modal="true">
 	<div class="modal" style="max-width:360px;">
 		<div class="modal-header"><h2 class="modal-title">New Category</h2>
 			<button class="btn btn-ghost btn-sm" on:click={() => showCatModal = false}>✕</button></div>
 		<div class="modal-body">
-			<div class="form-group"><label class="form-label">Category Name *</label>
-				<input class="form-control" bind:value={newCatName} placeholder="e.g. Hinges" autofocus /></div>
+			<div class="form-group"><label class="form-label" for="products-f1">Category Name *</label>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input id="products-f1" class="form-control" bind:value={newCatName} placeholder="e.g. Hinges" autofocus /></div>
 		</div>
 		<div class="modal-footer">
 			<button class="btn btn-secondary" on:click={() => showCatModal = false}>Cancel</button>
@@ -479,13 +537,14 @@
 
 <!-- Quick-Create Brand Modal -->
 {#if showBrandModal}
-<div class="modal-overlay" on:click|self={() => showBrandModal = false} role="dialog" aria-modal="true">
+<div class="modal-overlay" on:click|self={() => showBrandModal = false} on:keydown={(e) => e.key === 'Escape' && (showBrandModal = false)} role="dialog" tabindex="-1" aria-modal="true">
 	<div class="modal" style="max-width:360px;">
 		<div class="modal-header"><h2 class="modal-title">New Brand</h2>
 			<button class="btn btn-ghost btn-sm" on:click={() => showBrandModal = false}>✕</button></div>
 		<div class="modal-body">
-			<div class="form-group"><label class="form-label">Brand Name *</label>
-				<input class="form-control" bind:value={newBrandName} placeholder="e.g. Hafele" autofocus /></div>
+			<div class="form-group"><label class="form-label" for="products-f2">Brand Name *</label>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input id="products-f2" class="form-control" bind:value={newBrandName} placeholder="e.g. Hafele" autofocus /></div>
 		</div>
 		<div class="modal-footer">
 			<button class="btn btn-secondary" on:click={() => showBrandModal = false}>Cancel</button>
@@ -499,15 +558,16 @@
 
 <!-- Quick-Create Unit Modal -->
 {#if showUnitModal}
-<div class="modal-overlay" on:click|self={() => showUnitModal = false} role="dialog" aria-modal="true">
+<div class="modal-overlay" on:click|self={() => showUnitModal = false} on:keydown={(e) => e.key === 'Escape' && (showUnitModal = false)} role="dialog" tabindex="-1" aria-modal="true">
 	<div class="modal" style="max-width:360px;">
 		<div class="modal-header"><h2 class="modal-title">New Unit of Measure</h2>
 			<button class="btn btn-ghost btn-sm" on:click={() => showUnitModal = false}>✕</button></div>
 		<div class="modal-body">
-			<div class="form-group"><label class="form-label">Name *</label>
-				<input class="form-control" bind:value={newUnitName} placeholder="e.g. Piece" autofocus /></div>
-			<div class="form-group"><label class="form-label">Abbreviation *</label>
-				<input class="form-control" bind:value={newUnitAbbr} placeholder="e.g. pcs" /></div>
+			<div class="form-group"><label class="form-label" for="products-f3">Name *</label>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input id="products-f3" class="form-control" bind:value={newUnitName} placeholder="e.g. Piece" autofocus /></div>
+			<div class="form-group"><label class="form-label" for="products-f4">Abbreviation *</label>
+				<input id="products-f4" class="form-control" bind:value={newUnitAbbr} placeholder="e.g. pcs" /></div>
 		</div>
 		<div class="modal-footer">
 			<button class="btn btn-secondary" on:click={() => showUnitModal = false}>Cancel</button>
@@ -517,6 +577,43 @@
 		</div>
 	</div>
 </div>
+{/if}
+
+{#if stockFor}
+	<div class="modal-overlay" role="presentation" on:click|self={() => (stockFor = null)}>
+		<form class="modal" style="max-width:440px" on:submit|preventDefault={saveAddStock}>
+			<div class="modal-header">
+				<div>
+					<h2 class="modal-title">Add stock</h2>
+					<p class="text-sm text-slate-500">{stockFor.name} · current stock {Number(stockFor.total_stock ?? 0).toLocaleString('en-IN')}</p>
+				</div>
+				<button type="button" class="modal-close" on:click={() => (stockFor = null)} aria-label="Close">×</button>
+			</div>
+			<div class="modal-body space-y-4">
+				<div class="form-group">
+					<label class="form-label required" for="as-qty">Quantity received</label>
+					<!-- svelte-ignore a11y_autofocus -->
+					<input id="as-qty" class="form-control" type="number" min="0" step="any" bind:value={stockForm.quantity} required autofocus />
+				</div>
+				<div class="form-group">
+					<label class="form-label" for="as-rack">Put in rack</label>
+					<select id="as-rack" class="form-control" bind:value={stockForm.location_id}>
+						<option value="">Main location</option>
+						{#each stockRacks as r}<option value={r.id}>{r.label ?? r.rack_code}</option>{/each}
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label" for="as-note">Note</label>
+					<input id="as-note" class="form-control" bind:value={stockForm.reason} placeholder="Supplier, bill no…" />
+				</div>
+				<p class="text-xs text-slate-400">For supplier bills you also need to pay, use Purchases → New Purchase Order so the amount is tracked.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" on:click={() => (stockFor = null)}>Cancel</button>
+				<button type="submit" class="btn btn-primary" disabled={savingStock}>{savingStock ? 'Saving…' : 'Add to stock'}</button>
+			</div>
+		</form>
+	</div>
 {/if}
 
 <style>

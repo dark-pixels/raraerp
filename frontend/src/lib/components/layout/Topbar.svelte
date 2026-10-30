@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ui } from '$stores/ui';
+	import { ui, sidebarWidth } from '$stores/ui';
 	import { authStore, currentUser } from '$stores/auth';
-	import { notificationApi, authApi } from '$api/client';
+	import { api, notificationApi, authApi } from '$api/client';
 	import { toasts } from '$stores/toasts';
 	import { onMount } from 'svelte';
 
@@ -23,14 +23,14 @@
 			await authApi.logout();
 		} catch {}
 		authStore.reset();
-		import('$api/client').then(({ api }) => api.clearTokens());
+		api.clearTokens();
 		goto('/login');
 	}
 
 	onMount(loadNotificationCount);
 </script>
 
-<header class="topbar">
+<header class="topbar" style="left: {$sidebarWidth}px">
 	<!-- Mobile hamburger -->
 	<button
 		class="btn btn-ghost lg:hidden"

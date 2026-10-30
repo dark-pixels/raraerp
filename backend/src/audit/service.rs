@@ -1,8 +1,9 @@
-use crate::database::DbPool;
-use crate::errors::AppResult;
 use uuid::Uuid;
-use chrono::Utc;
 
+use crate::database::DbPool;
+
+/// Records an audit entry. Failures are logged but never fail the business
+/// operation that triggered them.
 pub async fn log_action(
     pool: &DbPool,
     user_id: Uuid,
@@ -10,12 +11,10 @@ pub async fn log_action(
     resource_type: &str,
     resource_id: Option<&str>,
     changes: Option<serde_json::Value>,
-) -> AppResult<()> {
-    sqlx::query!(
-        r#"
-        INSERT INTO audit_logs (user_id, action, resource_type, resource_id, changes)
-        VALUES ($1, $2, $3, $4, $5)
-        "#,
+) {
+    let result = sqlx::query!(
+        r#"INSERT INTO audit_logs (user_id, action, resource_type, resource_id, changes)
+           VALUES ($1, $2, $3, $4, $5)"#,
         user_id,
         action,
         resource_type,
@@ -23,6 +22,9 @@ pub async fn log_action(
         changes
     )
     .execute(pool)
-    .await?;
-    Ok(())
+    .await;
+
+    if let Err(e) = result {
+        tracing::warn!(action, resource_type, "Failed to write audit log: {}", e);
+    }
 }

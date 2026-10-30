@@ -1,8 +1,16 @@
-use tracing::{info, error, warn};
+//! Standalone background worker for long-running hosts (VPS, Docker).
+//! On serverless hosts, call `GET /api/v1/cron/run` on a schedule instead.
+
+use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
+// The worker shares these modules with the server but uses only part of them.
+#[allow(dead_code)]
+mod common;
+#[allow(dead_code)]
 mod config;
 mod database;
+#[allow(dead_code)]
 mod errors;
 mod jobs;
 
@@ -14,19 +22,20 @@ async fn main() {
     dotenvy::dotenv().ok();
 
     tracing_subscriber::registry()
-        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| "rara_erp_worker=info".into()))
+        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| "worker=info".into()))
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    info!("Starting RARA Enterprise ERP Background Worker");
+    info!("Starting RARA Enterprise ERP background worker");
 
-    let config = AppConfig::from_env().expect("Failed to load configuration");
-    let pool = create_pool(&config.database_url, 5)
-        .await
-        .expect("Failed to create database pool");
+    let config = AppConfig::from_env();
+    let pool = match create_pool(&config.database_url, 5) {
+        Ok(p) => p,
+        Err(e) => {
+            eprintln!("FATAL: invalid DATABASE_URL: {}", e);
+            std::process::exit(1);
+        }
+    };
 
-    info!("Worker database pool ready");
-
-    // Start the background job scheduler
     jobs::start_scheduler(pool).await;
 }

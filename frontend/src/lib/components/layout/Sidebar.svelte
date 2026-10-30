@@ -35,7 +35,7 @@
 			{ href: '/staff', icon: 'user-cog', label: 'Staff Management', perm: 'users.read' },
 			{ href: '/notifications', icon: 'bell', label: 'Notifications', perm: null },
 			{ href: '/audit-logs', icon: 'list', label: 'Audit Logs', perm: 'settings.manage' },
-			{ href: '/settings', icon: 'settings', label: 'Settings', perm: 'settings.manage' }
+			{ href: '/settings', icon: 'settings', label: 'Settings', perm: null }
 		]}
 	];
 
@@ -64,13 +64,18 @@
 	$: collapsed = $sidebarCollapsed;
 	$: currentPath = $page.url.pathname;
 
-	function isActive(href: string) {
-		return currentPath === href || (href !== '/dashboard' && currentPath.startsWith(href));
+	function isActive(href: string, path: string) {
+		return path === href || (href !== '/dashboard' && path.startsWith(href + '/'));
 	}
 
-	function canSee(perm: string | null): boolean {
+	// Recomputed whenever the user loads or changes, so the menu fills in after a refresh.
+	$: visibleSections = NAV_ITEMS.map((section) => ({
+		...section,
+		items: section.items.filter((item) => hasPermission($currentUser, item.perm))
+	})).filter((section) => section.items.length > 0);
+
+	function hasPermission(user: typeof $currentUser, perm: string | null): boolean {
 		if (!perm) return true;
-		const user = $currentUser;
 		if (!user) return false;
 		if (user.role === 'super_admin') return true;
 		return user.permissions.includes(perm);
@@ -99,14 +104,14 @@
 
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
-		{#each NAV_ITEMS as section}
-			{#each section.items.filter(item => canSee(item.perm)) as item, i}
+		{#each visibleSections as section}
+			{#each section.items as item, i}
 				{#if i === 0 && !collapsed}
 					<div class="nav-section-label">{section.section}</div>
 				{/if}
 				<a
 					href={item.href}
-					class="nav-item {isActive(item.href) ? 'active' : ''}"
+					class="nav-item {isActive(item.href, currentPath) ? 'active' : ''}"
 					title={collapsed ? item.label : ''}
 					on:click={() => ui.closeMobileSidebar()}
 				>

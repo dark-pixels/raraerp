@@ -1,10 +1,14 @@
 use std::env;
 
+/// Development-only signing key. Never used when APP_ENV=production.
+const DEV_JWT_SECRET: &str = "rara-erp-local-development-secret-do-not-use-in-production-0000000000";
+
 #[derive(Debug, Clone)]
 pub struct AppConfig {
     // Server
     pub port: u16,
     pub app_env: String,
+    /// Comma-separated list of allowed origins, or "*".
     pub frontend_origin: String,
 
     // Database
@@ -14,7 +18,7 @@ pub struct AppConfig {
     // JWT
     pub jwt_secret: String,
     pub jwt_expiry_seconds: u64,
-    pub refresh_token_expiry_days: u64,
+    pub refresh_token_expiry_days: i64,
 
     // Cloudinary
     pub cloudinary_cloud_name: String,
@@ -30,125 +34,103 @@ pub struct AppConfig {
     pub gst_api_base_url: String,
     pub gst_api_key: String,
 
-    // Timezone
-    pub timezone: String,
-
     // UPI
     pub upi_merchant_id: String,
     pub upi_merchant_name: String,
 
-    // Notifications
-    pub smtp_host: Option<String>,
-    pub smtp_port: Option<u16>,
-    pub smtp_username: Option<String>,
-    pub smtp_password: Option<String>,
-    pub smtp_from: Option<String>,
+    /// Shared secret for the scheduled-jobs endpoint (Vercel Cron sends it as a Bearer token).
+    pub cron_secret: String,
 }
 
 impl Default for AppConfig {
     fn default() -> Self {
-        Self {
-            port: 8080,
-            app_env: "production".to_string(),
-            frontend_origin: "*".to_string(),
-            database_url: String::new(),
-            db_max_connections: 10,
-            jwt_secret: "rara-erp-secret-key-at-least-64-characters-for-secure-signing-token-2026-prod".to_string(),
-            jwt_expiry_seconds: 3600,
-            refresh_token_expiry_days: 30,
-            cloudinary_cloud_name: String::new(),
-            cloudinary_api_key: String::new(),
-            cloudinary_api_secret: String::new(),
-            razorpay_key_id: String::new(),
-            razorpay_key_secret: String::new(),
-            razorpay_webhook_secret: String::new(),
-            gst_api_base_url: "https://api.gst-placeholder.example.com".to_string(),
-            gst_api_key: String::new(),
-            timezone: "Asia/Kolkata".to_string(),
-            upi_merchant_id: String::new(),
-            upi_merchant_name: "RARA Enterprise".to_string(),
-            smtp_host: None,
-            smtp_port: Some(587),
-            smtp_username: None,
-            smtp_password: None,
-            smtp_from: None,
-        }
+        Self::from_env()
     }
 }
 
-impl AppConfig {
-    pub fn from_env() -> Result<Self, String> {
-        let port: u16 = env::var("PORT")
-            .unwrap_or_else(|_| "8080".to_string())
-            .parse()
-            .unwrap_or(8080);
+fn var(key: &str) -> String {
+    env::var(key).map(|v| v.trim().to_string()).unwrap_or_default()
+}
 
-        let database_url = env::var("DATABASE_URL").unwrap_or_default();
+fn var_or(key: &str, default: &str) -> String {
+    let v = var(key);
+    if v.is_empty() { default.to_string() } else { v }
+}
+
+fn parse_or<T: std::str::FromStr>(key: &str, default: T) -> T {
+    env::var(key).ok().and_then(|v| v.trim().parse().ok()).unwrap_or(default)
+}
+
+/// Picks the JWT signing secret. In production a missing or short secret is a
+/// misconfiguration: rather than fall back to a publicly known key (which would
+/// let anyone forge tokens), a random per-process key is generated. Sessions
+/// then do not survive restarts, which makes the problem visible.
+fn resolve_jwt_secret(app_env: &str) -> String {
+    let secret = var("JWT_SECRET");
+    if secret.len() >= 32 {
+        return secret;
+    }
+    if app_env == "production" {
+        tracing::error!(
+            "JWT_SECRET is missing or shorter than 32 characters. Using a random per-process key; \
+             users will be signed out whenever the server restarts. Set JWT_SECRET to fix this."
+        );
+        use rand::Rng;
+        let mut bytes = [0u8; 48];
+        rand::thread_rng().fill(&mut bytes[..]);
+        return hex::encode(bytes);
+    }
+    if !secret.is_empty() {
+        tracing::warn!("JWT_SECRET is shorter than 32 characters; use a longer secret in production");
+        return secret;
+    }
+    tracing::warn!("JWT_SECRET not set; using the development key");
+    DEV_JWT_SECRET.to_string()
+}
+
+impl AppConfig {
+    pub fn from_env() -> Self {
+        let app_env = var_or("APP_ENV", "production").to_lowercase();
+        let database_url = var("DATABASE_URL");
         if database_url.is_empty() {
-            eprintln!("WARNING: DATABASE_URL environment variable is not set! Set it in Vercel Project Settings.");
+            tracing::error!("DATABASE_URL is not set; all database operations will fail");
         }
 
-        let jwt_secret = env::var("JWT_SECRET").unwrap_or_else(|_| {
-            "rara-erp-secret-key-at-least-64-characters-for-secure-signing-token-2026-prod".to_string()
-        });
-
-        let frontend_origin = env::var("FRONTEND_ORIGIN").unwrap_or_else(|_| "*".to_string());
-
-        Ok(Self {
-            port,
-            app_env: env::var("APP_ENV").unwrap_or_else(|_| "production".to_string()),
-            frontend_origin,
+        Self {
+            port: parse_or("PORT", 8080),
+            jwt_secret: resolve_jwt_secret(&app_env),
+            app_env,
+            frontend_origin: var_or("FRONTEND_ORIGIN", "*"),
 
             database_url,
-            db_max_connections: env::var("DB_MAX_CONNECTIONS")
-                .unwrap_or_else(|_| "10".to_string())
-                .parse()
-                .unwrap_or(10),
+            db_max_connections: parse_or("DB_MAX_CONNECTIONS", 10),
 
-            jwt_secret,
-            jwt_expiry_seconds: env::var("JWT_EXPIRY_SECONDS")
-                .unwrap_or_else(|_| "3600".to_string())
-                .parse()
-                .unwrap_or(3600),
-            refresh_token_expiry_days: env::var("REFRESH_TOKEN_EXPIRY_DAYS")
-                .unwrap_or_else(|_| "30".to_string())
-                .parse()
-                .unwrap_or(30),
+            jwt_expiry_seconds: parse_or("JWT_EXPIRY_SECONDS", 3600),
+            refresh_token_expiry_days: parse_or("REFRESH_TOKEN_EXPIRY_DAYS", 30),
 
-            cloudinary_cloud_name: env::var("CLOUDINARY_CLOUD_NAME")
-                .unwrap_or_default(),
-            cloudinary_api_key: env::var("CLOUDINARY_API_KEY")
-                .unwrap_or_default(),
-            cloudinary_api_secret: env::var("CLOUDINARY_API_SECRET")
-                .unwrap_or_default(),
+            cloudinary_cloud_name: var("CLOUDINARY_CLOUD_NAME"),
+            cloudinary_api_key: var("CLOUDINARY_API_KEY"),
+            cloudinary_api_secret: var("CLOUDINARY_API_SECRET"),
 
-            razorpay_key_id: env::var("RAZORPAY_KEY_ID")
-                .unwrap_or_default(),
-            razorpay_key_secret: env::var("RAZORPAY_KEY_SECRET")
-                .unwrap_or_default(),
-            razorpay_webhook_secret: env::var("RAZORPAY_WEBHOOK_SECRET")
-                .unwrap_or_default(),
+            razorpay_key_id: var("RAZORPAY_KEY_ID"),
+            razorpay_key_secret: var("RAZORPAY_KEY_SECRET"),
+            razorpay_webhook_secret: var("RAZORPAY_WEBHOOK_SECRET"),
 
-            gst_api_base_url: env::var("GST_API_BASE_URL")
-                .unwrap_or_else(|_| "https://api.gst-placeholder.example.com".to_string()),
-            gst_api_key: env::var("GST_API_KEY")
-                .unwrap_or_default(),
+            gst_api_base_url: var("GST_API_BASE_URL"),
+            gst_api_key: var("GST_API_KEY"),
 
-            timezone: env::var("TZ").unwrap_or_else(|_| "Asia/Kolkata".to_string()),
+            upi_merchant_id: var("UPI_MERCHANT_ID"),
+            upi_merchant_name: var_or("UPI_MERCHANT_NAME", "RARA Enterprise"),
 
-            upi_merchant_id: env::var("UPI_MERCHANT_ID").unwrap_or_default(),
-            upi_merchant_name: env::var("UPI_MERCHANT_NAME")
-                .unwrap_or_else(|_| "RARA Enterprise".to_string()),
-
-            smtp_host: env::var("SMTP_HOST").ok(),
-            smtp_port: env::var("SMTP_PORT").ok().and_then(|p| p.parse().ok()),
-            smtp_username: env::var("SMTP_USERNAME").ok(),
-            smtp_password: env::var("SMTP_PASSWORD").ok(),
-            smtp_from: env::var("SMTP_FROM").ok(),
-        })
+            cron_secret: var("CRON_SECRET"),
+        }
     }
 
-    pub fn is_production(&self) -> bool {
-        self.app_env == "production"
+    pub fn allowed_origins(&self) -> Vec<String> {
+        self.frontend_origin
+            .split(',')
+            .map(|o| o.trim().trim_end_matches('/').to_string())
+            .filter(|o| !o.is_empty())
+            .collect()
     }
 }

@@ -62,7 +62,7 @@
 							<td class="font-mono font-semibold">{m.quantity}</td>
 							<td class="text-sm text-slate-500">{m.reference_document ?? '—'}</td>
 							<td class="text-xs text-slate-400">
-								{m.source_location_id ? `Loc ${m.source_location_id}` : 'External'} → {m.destination_location_id ? `Loc ${m.destination_location_id}` : 'External'}
+								{m.source_rack ?? (m.source_location_id ? "Rack" : "—")} → {m.destination_rack ?? (m.destination_location_id ? "Rack" : "—")}{#if m.user_name}<div class="text-slate-400">by {m.user_name}</div>{/if}
 							</td>
 						</tr>
 					{/each}
